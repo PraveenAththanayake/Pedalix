@@ -1,48 +1,40 @@
 {
   "project_info": {
-    "project_number": "492077384260",
-    "project_id": "pedalix-30c8e",
-    "storage_bucket": "pedalix-30c8e.appspot.com"
+    "project_number": "535766920813",
+    "project_id": "pedalix-6cdf9",
+    "storage_bucket": "pedalix-6cdf9.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:492077384260:android:768725848bdcd06130f211",
+        "mobilesdk_app_id": "1:535766920813:android:01536604c62aa6772a1964",
         "android_client_info": {
           "package_name": "com.example.pedalix_app"
         }
       },
       "oauth_client": [
         {
-          "client_id": "492077384260-6cqp6qcdl06m5ct1skfur00cgpv97di4.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.pedalix_app",
-            "certificate_hash": "a39009a55c97f8942ab38024a9562d3df30efc95"
-          }
-        },
-        {
-          "client_id": "492077384260-qsbjhap9hchofcuduv13mhjias8g6nru.apps.googleusercontent.com",
+          "client_id": "535766920813-m7f6g97qrmhhmb60aluoht1g3ga3437s.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCdDlJccq5HEe0TUM8mJPIYBGgpO8pttuw"
+          "current_key": "AIzaSyBMeK0h5rksNbm8lLQn4w_qYCJ8RUsdb2Q"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "492077384260-1de4l59nr6b9jab1tb84a4uor8l5mala.apps.googleusercontent.com",
+              "client_id": "535766920813-m7f6g97qrmhhmb60aluoht1g3ga3437s.apps.googleusercontent.com",
               "client_type": 3
             },
             {
-              "client_id": "492077384260-88pl0ru9c3oinfon3m1kff37do7sji3u.apps.googleusercontent.com",
+              "client_id": "535766920813-uv8l5qfltdcurft76b4mmtgisd8ci11p.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.pedalixApp.RunnerTests"
+                "bundle_id": "com.example.pedalixApp"
               }
             }
           ]

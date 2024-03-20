@@ -50,23 +50,20 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCdDlJccq5HEe0TUM8mJPIYBGgpO8pttuw',
-    appId: '1:492077384260:android:768725848bdcd06130f211',
-    messagingSenderId: '492077384260',
-    projectId: 'pedalix-30c8e',
-    storageBucket: 'pedalix-30c8e.appspot.com',
+    apiKey: 'AIzaSyBMeK0h5rksNbm8lLQn4w_qYCJ8RUsdb2Q',
+    appId: '1:535766920813:android:01536604c62aa6772a1964',
+    messagingSenderId: '535766920813',
+    projectId: 'pedalix-6cdf9',
+    storageBucket: 'pedalix-6cdf9.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDGeDc-9sMnRdE9G-uODow7AmH4IICcGfY',
-    appId: '1:492077384260:ios:0978415f1167285630f211',
-    messagingSenderId: '492077384260',
-    projectId: 'pedalix-30c8e',
-    storageBucket: 'pedalix-30c8e.appspot.com',
-    androidClientId:
-        '492077384260-6cqp6qcdl06m5ct1skfur00cgpv97di4.apps.googleusercontent.com',
-    iosClientId:
-        '492077384260-o304ps02b7p83evb94c5vj3kap7fmsfp.apps.googleusercontent.com',
+    apiKey: 'AIzaSyAHYmKLt04KWnsJCldNEDlJrasWQi1spxA',
+    appId: '1:535766920813:ios:307e7ad4ef39da6a2a1964',
+    messagingSenderId: '535766920813',
+    projectId: 'pedalix-6cdf9',
+    storageBucket: 'pedalix-6cdf9.appspot.com',
+    iosClientId: '535766920813-uv8l5qfltdcurft76b4mmtgisd8ci11p.apps.googleusercontent.com',
     iosBundleId: 'com.example.pedalixApp',
   );
 }
