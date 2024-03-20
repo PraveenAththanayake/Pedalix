@@ -2,24 +2,18 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CLIENT_ID</key>
-	<string>492077384260-o304ps02b7p83evb94c5vj3kap7fmsfp.apps.googleusercontent.com</string>
-	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.492077384260-o304ps02b7p83evb94c5vj3kap7fmsfp</string>
-	<key>ANDROID_CLIENT_ID</key>
-	<string>492077384260-6cqp6qcdl06m5ct1skfur00cgpv97di4.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
-	<string>AIzaSyDGeDc-9sMnRdE9G-uODow7AmH4IICcGfY</string>
+	<string>AIzaSyAHYmKLt04KWnsJCldNEDlJrasWQi1spxA</string>
 	<key>GCM_SENDER_ID</key>
-	<string>492077384260</string>
+	<string>535766920813</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>com.example.pedalixApp</string>
 	<key>PROJECT_ID</key>
-	<string>pedalix-30c8e</string>
+	<string>pedalix-6cdf9</string>
 	<key>STORAGE_BUCKET</key>
-	<string>pedalix-30c8e.appspot.com</string>
+	<string>pedalix-6cdf9.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -31,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:492077384260:ios:0978415f1167285630f211</string>
+	<string>1:535766920813:ios:307e7ad4ef39da6a2a1964</string>
 </dict>
 </plist>
