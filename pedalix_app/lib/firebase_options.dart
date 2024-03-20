@@ -63,8 +63,10 @@ class DefaultFirebaseOptions {
     messagingSenderId: '492077384260',
     projectId: 'pedalix-30c8e',
     storageBucket: 'pedalix-30c8e.appspot.com',
-    androidClientId: '492077384260-6cqp6qcdl06m5ct1skfur00cgpv97di4.apps.googleusercontent.com',
-    iosClientId: '492077384260-o304ps02b7p83evb94c5vj3kap7fmsfp.apps.googleusercontent.com',
+    androidClientId:
+        '492077384260-6cqp6qcdl06m5ct1skfur00cgpv97di4.apps.googleusercontent.com',
+    iosClientId:
+        '492077384260-o304ps02b7p83evb94c5vj3kap7fmsfp.apps.googleusercontent.com',
     iosBundleId: 'com.example.pedalixApp',
   );
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pedalix_app/screens/getting_number.dart';
+import 'package:pedalix_app/screens/sign_up.dart';
 
 class NumberVerification extends StatefulWidget {
   const NumberVerification({Key? key}) : super(key: key);
@@ -192,11 +193,8 @@ class _MyAppState extends State<NumberVerification> {
                   foregroundColor: MaterialStateProperty.all(Colors.white),
                 ),
                 onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    print('Form is valid');
-                  } else {
-                    print('Form is invalid');
-                  }
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (_) => SignUpScreen()));
                 },
                 child: Text('Verify number',
                     style: GoogleFonts.poppins(
