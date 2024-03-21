@@ -168,10 +168,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  void _handleGoogleSignIn() {
+  void _handleGoogleSignIn() async {
     try {
       GoogleAuthProvider _googleAuthProvider = GoogleAuthProvider();
-      _auth.signInWithProvider(_googleAuthProvider);
+      UserCredential userCredential =
+          await _auth.signInWithProvider(_googleAuthProvider);
+      User? user = userCredential.user;
+
+      if (user != null) {
+        // Save the user data in Firestore
+        await firestoreInstance.collection('users').doc(user.uid).set({
+          'displayName': user.displayName,
+          'email': user.email,
+          'photoURL': user.photoURL,
+        });
+      }
     } catch (error) {
       print(error);
     }
