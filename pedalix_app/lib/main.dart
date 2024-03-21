@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:pedalix_app/firebase_options.dart';
-import 'package:pedalix_app/screens/login_page.dart';
 import 'package:pedalix_app/screens/onboarding.dart';
 import 'core/app_export.dart';
 
@@ -37,7 +36,6 @@ class MyApp extends StatelessWidget {
             '/': (context) =>
                 onboarding(), // Updated to use 'Onboarding' instead of 'onboarding'
             '/onboarding': (context) => onboarding(),
-            '/login': (context) => LoginPage(),
             // Assuming 'AppRoutes.routes' is defined in 'app_export.dart'
           },
         );
