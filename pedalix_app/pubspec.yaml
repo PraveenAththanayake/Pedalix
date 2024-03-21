@@ -30,7 +30,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  intl: ^0.18.0
+  intl: ^0.19.0
   cached_network_image: ^3.3.0
   flutter_svg: ^2.0.9
   country_pickers: ^2.0.0
@@ -76,6 +76,11 @@ flutter:
     - assets/back_button.png
     - assets/images/img_facebookroundcoloricon_1.png
     - assets/images/img_googlecoloricon_1.png
+    - assets/QuestionMark.png
+    - assets/Transaction.png
+    - assets/add.png
+    - assets/back.png
+    - assets/Visa.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

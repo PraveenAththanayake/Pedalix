@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:pedalix_app/components/navbar.dart';
 import 'package:pedalix_app/firebase_options.dart';
 import 'package:pedalix_app/screens/onboarding.dart';
 import 'core/app_export.dart';
@@ -22,6 +23,9 @@ void main() async {
   runApp(MyApp());
 }
 
+final Color primaryColor = Color(0xFF127368);
+Color customColor = Color(0x18115104).withOpacity(0.2);
+
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -31,10 +35,10 @@ class MyApp extends StatelessWidget {
           theme: theme, // Assuming 'theme' is defined in 'app_export.dart'
           title: 'pedalix_app',
           debugShowCheckedModeBanner: false,
+          home: onboarding(),
 
           routes: {
-            '/': (context) =>
-                onboarding(), // Updated to use 'Onboarding' instead of 'onboarding'
+            // Updated to use 'Onboarding' instead of 'onboarding'
             '/onboarding': (context) => onboarding(),
             // Assuming 'AppRoutes.routes' is defined in 'app_export.dart'
           },
