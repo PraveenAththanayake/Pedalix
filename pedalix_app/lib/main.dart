@@ -35,11 +35,11 @@ class MyApp extends StatelessWidget {
           theme: theme, // Assuming 'theme' is defined in 'app_export.dart'
           title: 'pedalix_app',
           debugShowCheckedModeBanner: false,
-          home: onboarding(),
+          home: const onboarding(),
 
           routes: {
             // Updated to use 'Onboarding' instead of 'onboarding'
-            '/onboarding': (context) => onboarding(),
+            '/onboarding': (context) => const onboarding(),
             // Assuming 'AppRoutes.routes' is defined in 'app_export.dart'
           },
         );
