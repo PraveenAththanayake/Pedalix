@@ -1,9 +1,13 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:pedalix_app/core/app_export.dart';
 import 'package:pedalix_app/screens/number_verification.dart';
 
 class GettingNumber extends StatefulWidget {
   const GettingNumber({Key? key}) : super(key: key);
+
+  static String verify = "";
 
   @override
   State<GettingNumber> createState() => _MyAppState();
@@ -11,6 +15,8 @@ class GettingNumber extends StatefulWidget {
 
 class _MyAppState extends State<GettingNumber> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  var phone = "";
 
   // Define primary color
   final Color primaryColor = Color(0xFF127368);
@@ -65,6 +71,10 @@ class _MyAppState extends State<GettingNumber> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           TextFormField(
+                            keyboardType: TextInputType.phone,
+                            onChanged: (value) {
+                              phone = value;
+                            },
                             maxLength: 10,
                             decoration: InputDecoration(
                               labelText: 'Enter number',
@@ -130,17 +140,33 @@ class _MyAppState extends State<GettingNumber> {
                       // Change the text color here
                       foregroundColor: MaterialStateProperty.all(Colors.white),
                     ),
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => NumberVerification(),
-                          ),
-                        );
-                        // Handle onPressed function here
-                      } else {
-                        print('Form is invalid');
-                      }
+                    onPressed: () async {
+                      await FirebaseAuth.instance.verifyPhoneNumber(
+                        phoneNumber: '{+94$phone}',
+                        verificationCompleted:
+                            (PhoneAuthCredential credential) async {
+                          // This callback will be called when the verification is done automatically
+                          await FirebaseAuth.instance
+                              .signInWithCredential(credential);
+                        },
+                        verificationFailed: (FirebaseAuthException e) {
+                          // This callback will be called when the verification has failed
+                          print(e);
+                        },
+                        codeSent: (String verificationId, int? resendToken) {
+                          GettingNumber.verify = verificationId;
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => NumberVerification(),
+                            ),
+                          );
+                          // This callback will be called when the code is sent
+                          // You can use this verificationId to create PhoneAuthCredential and signInWithCredential
+                        },
+                        codeAutoRetrievalTimeout: (String verificationId) {
+                          // This callback will be called when the auto-retrieval timeout is exceeded
+                        },
+                      );
                     },
                     child: Text(
                       'Continue',

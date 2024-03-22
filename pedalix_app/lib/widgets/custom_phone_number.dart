@@ -1,6 +1,7 @@
 import 'package:country_pickers/country_pickers.dart';
 import 'package:country_pickers/utils/utils.dart';
 import 'package:country_pickers/country.dart';
+import 'package:pedalix_app/screens/getting_number.dart';
 import 'package:pedalix_app/widgets/custom_text_form_field.dart';
 import 'package:pedalix_app/core/app_export.dart';
 import 'package:flutter/material.dart';
@@ -72,6 +73,16 @@ class CustomPhoneNumber extends StatelessWidget {
                 width: 301.h,
                 controller: controller,
                 hintText: "+94",
+                focusNode: FocusNode()
+                  ..addListener(() {
+                    if (FocusScope.of(context).hasFocus) {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => GettingNumber(),
+                        ),
+                      );
+                    }
+                  }),
               ),
             ),
           ),

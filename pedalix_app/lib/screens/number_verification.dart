@@ -1,3 +1,7 @@
+import 'dart:math';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pedalix_app/screens/getting_number.dart';
@@ -13,10 +17,13 @@ class NumberVerification extends StatefulWidget {
 class _MyAppState extends State<NumberVerification> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
+  final FirebaseAuth auth = FirebaseAuth.instance;
+
   // Define primary color
   final Color primaryColor = Color(0xFF127368);
   @override
   Widget build(BuildContext context) {
+    var code = "";
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
@@ -128,7 +135,10 @@ class _MyAppState extends State<NumberVerification> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               TextFormField(
-                                maxLength: 4,
+                                onChanged: (value) {
+                                  code = value;
+                                },
+                                maxLength: 6,
                                 decoration: InputDecoration(
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10.0),
@@ -152,8 +162,19 @@ class _MyAppState extends State<NumberVerification> {
                               ),
                               Center(
                                 child: TextButton(
-                                  onPressed: () {
-                                    // Dummy onPressed function
+                                  onPressed: () async {
+                                    try {
+                                      PhoneAuthCredential credential =
+                                          PhoneAuthProvider.credential(
+                                              verificationId:
+                                                  GettingNumber.verify,
+                                              smsCode: code);
+                                      UserCredential userCredential = await auth
+                                          .signInWithCredential(credential);
+                                      User? user = userCredential.user;
+                                    } catch (error) {
+                                      print("object");
+                                    }
                                   },
                                   child: Text(
                                     'Resend code in 00:30',
@@ -192,9 +213,36 @@ class _MyAppState extends State<NumberVerification> {
                   // Change the text color here
                   foregroundColor: MaterialStateProperty.all(Colors.white),
                 ),
-                onPressed: () {
-                  Navigator.of(context)
-                      .push(MaterialPageRoute(builder: (_) => SignUpScreen()));
+                onPressed: () async {
+                  try {
+                    PhoneAuthCredential credential =
+                        PhoneAuthProvider.credential(
+                            verificationId: GettingNumber.verify,
+                            smsCode: code);
+                    UserCredential userCredential =
+                        await auth.signInWithCredential(credential);
+                    User? user = userCredential.user;
+
+                    if (user != null) {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => SignUpScreen(),
+                        ),
+                      );
+                      // Save the phone number in Firebase Firestore
+                      FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(user.uid)
+                          .set({
+                        'phoneNumber': user.phoneNumber,
+                      });
+
+                      // Update the phone number in Firebase Authentication
+                      await user.updatePhoneNumber(credential);
+                    }
+                  } catch (error) {
+                    print('Error occurred: $error');
+                  }
                 },
                 child: Text('Verify number',
                     style: GoogleFonts.poppins(
