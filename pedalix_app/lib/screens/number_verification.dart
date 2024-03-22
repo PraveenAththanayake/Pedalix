@@ -1,11 +1,11 @@
-import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:pedalix_app/screens/create_account.dart';
 import 'package:pedalix_app/screens/getting_number.dart';
 import 'package:pedalix_app/screens/sign_up.dart';
+import 'package:pedalix_app/screens/user_info_page.dart';
 
 class NumberVerification extends StatefulWidget {
   const NumberVerification({Key? key}) : super(key: key);
@@ -224,18 +224,36 @@ class _MyAppState extends State<NumberVerification> {
                     User? user = userCredential.user;
 
                     if (user != null) {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => SignUpScreen(),
-                        ),
-                      );
-                      // Save the phone number in Firebase Firestore
-                      FirebaseFirestore.instance
-                          .collection('users')
-                          .doc(user.uid)
-                          .set({
-                        'phoneNumber': user.phoneNumber,
-                      });
+                      // Check if the user's email is null or empty
+                      if (user.email == null || user.email!.isEmpty) {
+                        // If it is, navigate to the create account page
+                        String? phoneNumber = user.phoneNumber;
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                CreateAccount(phoneNumber: phoneNumber ?? ""),
+                          ),
+                        );
+                      } else {
+                        // If the user's email is not null or empty, navigate to the sign up screen
+                        await FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(user.uid)
+                            .set({
+                          'phoneNumber': user.phoneNumber,
+                          'displayName': user.displayName,
+                          'email': user.email,
+                          'photoURL': user.photoURL,
+                          'timestamp': FieldValue.serverTimestamp(),
+                        });
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => UserInfoPage(
+                              user: user,
+                            ),
+                          ),
+                        );
+                      }
 
                       // Update the phone number in Firebase Authentication
                       await user.updatePhoneNumber(credential);
