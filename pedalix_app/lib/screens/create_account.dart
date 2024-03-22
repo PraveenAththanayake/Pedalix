@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:pedalix_app/core/app_export.dart';
+import 'package:pedalix_app/screens/user_info_page.dart';
 import 'package:pedalix_app/widgets/custom_outlined_button.dart';
 
 class CreateAccount extends StatefulWidget {
@@ -121,6 +122,12 @@ class _CreateAccountState extends State<CreateAccount> {
           'photoURL': user.photoURL,
           'timestamp': FieldValue.serverTimestamp(),
         });
+
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => UserInfoPage(user: user),
+          ),
+        );
       }
     } catch (error) {
       print(error);
