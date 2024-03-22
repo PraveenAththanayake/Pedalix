@@ -17,14 +17,17 @@ class UserInfoPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            if (user != null)
+            if (user != null &&
+                user!.photoURL !=
+                    null) // Check if user and photoURL are not null
               Container(
                 height: 100,
                 width: 100,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   image: DecorationImage(
-                    image: NetworkImage(user!.photoURL!),
+                    image: NetworkImage(user!
+                        .photoURL!), // Safe access using null-aware operator
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -32,6 +35,11 @@ class UserInfoPage extends StatelessWidget {
             SizedBox(height: 20),
             Text(
               user?.displayName ?? 'No Name',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 20),
+            Text(
+              user?.phoneNumber ?? 'No TP Number',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 10),
