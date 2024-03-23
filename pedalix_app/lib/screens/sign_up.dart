@@ -1,4 +1,4 @@
-import 'package:pedalix_app/screens/user_info_page.dart';
+import 'package:pedalix_app/screens/user_info_edit.dart';
 import 'package:pedalix_app/widgets/custom_phone_number.dart';
 import 'package:country_pickers/country.dart';
 import 'package:country_pickers/country_pickers.dart';
@@ -49,7 +49,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   Widget _userInfo() {
-    return UserInfoPage(user: _user);
+    return UserInfoEdit(user: _user);
   }
 
   Widget _signInScreen() {
