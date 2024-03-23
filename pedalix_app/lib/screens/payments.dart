@@ -36,7 +36,7 @@ class _PaymentsState extends State<Payments> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Container(
-                  width: 430,
+                  width: double.infinity,
                   height: 320,
                   decoration: const BoxDecoration(
                     color: Colors.white,
@@ -77,7 +77,7 @@ class _PaymentsState extends State<Payments> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Container(
-                              width: 390,
+                              width: double.infinity,
                               height: 100,
                               decoration: BoxDecoration(
                                 color: customColor, // Provide customColor
@@ -195,7 +195,7 @@ class _PaymentsState extends State<Payments> {
                         // Custom icon for the dropdown button
                         trailing: isExpanded
                             ? Image.asset(
-                                'assets/add.png', // Provide the path to your custom icon image
+                                'assets/Minus_button.png', // Provide the path to your custom icon image
                                 width:
                                     24, // Adjust the width to your preference
                                 height:
