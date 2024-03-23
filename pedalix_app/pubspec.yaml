@@ -45,6 +45,7 @@ dependencies:
   google_sign_in: ^6.2.1
   cloud_firestore: ^4.15.9
   get: ^4.6.6
+  flutter_barcode_scanner: ^2.0.0
 
 dev_dependencies:
   flutter_test:
@@ -83,6 +84,7 @@ flutter:
     - assets/back.png
     - assets/Visa.png
     - assets/user.png
+    - assets/qr_code.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

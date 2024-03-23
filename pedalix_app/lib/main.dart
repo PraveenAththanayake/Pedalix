@@ -7,6 +7,7 @@ import 'package:pedalix_app/firebase_options.dart';
 import 'package:pedalix_app/screens/onboarding.dart';
 import 'package:pedalix_app/screens/sign_up.dart';
 import 'core/app_export.dart';
+import 'package:pedalix_app/screens/qr_scan.dart';
 
 var globalMessengerKey = GlobalKey<ScaffoldMessengerState>();
 
