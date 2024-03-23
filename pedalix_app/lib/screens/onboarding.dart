@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pedalix_app/screens/getting_number.dart';
+import 'package:pedalix_app/screens/payments.dart';
 import 'package:pedalix_app/screens/sign_up.dart';
 import 'package:pedalix_app/screens/user_info_edit.dart';
 import 'package:pedalix_app/screens/user_info_page.dart';
@@ -114,8 +115,8 @@ class onboarding extends StatelessWidget {
                 right: 0,
                 child: TextButton(
                   onPressed: () {
-                    Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => SignUpScreen()));
+                    Navigator.of(context)
+                        .push(MaterialPageRoute(builder: (_) => Payments()));
                     // Handle onPressed function here
                   },
                   style: ButtonStyle(
