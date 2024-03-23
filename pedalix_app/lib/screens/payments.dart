@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pedalix_app/main.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Payments extends StatefulWidget {
   const Payments({super.key});
@@ -14,6 +17,11 @@ class _PaymentsState extends State<Payments> {
   bool _saveCard = false;
   final GlobalKey<FormState> _formKey =
       GlobalKey<FormState>(); // Define _formKey
+  final _cvvController = TextEditingController();
+  final _expireDateController = TextEditingController();
+  final _cardNumberController = TextEditingController();
+  final _auth = FirebaseAuth.instance;
+  final _firestore = FirebaseFirestore.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -239,6 +247,43 @@ class _PaymentsState extends State<Payments> {
                                               children: [
                                                 Expanded(
                                                   child: TextFormField(
+                                                    controller:
+                                                        _cardNumberController,
+                                                    keyboardType:
+                                                        TextInputType.number,
+                                                    inputFormatters: [
+                                                      LengthLimitingTextInputFormatter(
+                                                          19), // limit to 19 characters (16 numbers + 3 spaces)
+                                                      FilteringTextInputFormatter
+                                                          .digitsOnly, // only allow digits
+                                                      TextInputFormatter
+                                                          .withFunction(
+                                                              (oldValue,
+                                                                  newValue) {
+                                                        String newText =
+                                                            newValue.text
+                                                                .replaceAll(
+                                                                    RegExp(
+                                                                        r'\D'),
+                                                                    '');
+                                                        if (newText.length >=
+                                                            4) {
+                                                          newText = newText
+                                                              .replaceAllMapped(
+                                                                  RegExp(
+                                                                      r'.{4}'),
+                                                                  (match) =>
+                                                                      '${match.group(0)} ');
+                                                        }
+                                                        return newValue.copyWith(
+                                                            text: newText
+                                                                .trimRight(),
+                                                            selection: TextSelection
+                                                                .collapsed(
+                                                                    offset: newText
+                                                                        .length));
+                                                      }),
+                                                    ],
                                                     decoration: InputDecoration(
                                                       labelText: 'Card number',
                                                       hintText:
@@ -251,7 +296,6 @@ class _PaymentsState extends State<Payments> {
                                                               .symmetric(
                                                               vertical: 0,
                                                               horizontal: 10),
-                                                      // Add suffix icon here
                                                       suffixIcon: Padding(
                                                         padding:
                                                             const EdgeInsets
@@ -265,7 +309,8 @@ class _PaymentsState extends State<Payments> {
                                                       ),
                                                     ),
                                                     validator: (value) {
-                                                      if (value!.isEmpty) {
+                                                      if (value!.isEmpty ||
+                                                          value.length < 19) {
                                                         return 'Please enter valid card number';
                                                       }
                                                       return null;
@@ -282,6 +327,8 @@ class _PaymentsState extends State<Payments> {
                                               children: [
                                                 Expanded(
                                                   child: TextFormField(
+                                                    controller:
+                                                        _expireDateController,
                                                     decoration:
                                                         const InputDecoration(
                                                       labelText:
@@ -298,13 +345,61 @@ class _PaymentsState extends State<Payments> {
                                                       if (value!.isEmpty) {
                                                         return 'Please enter valid expiration date';
                                                       }
+                                                      var dateParts =
+                                                          value.split('/');
+                                                      if (dateParts.length !=
+                                                          2) {
+                                                        return 'Invalid format. Use MM/YY';
+                                                      }
+                                                      var month = int.tryParse(
+                                                          dateParts[0]);
+                                                      var year = int.tryParse(
+                                                          '20' + dateParts[1]);
+                                                      if (month == null ||
+                                                          month < 1 ||
+                                                          month > 12) {
+                                                        return 'Month must be between 1 and 12';
+                                                      }
+                                                      if (year == null ||
+                                                          year <= 23) {
+                                                        return 'Year must be more than 2023';
+                                                      }
                                                       return null;
                                                     },
+                                                    inputFormatters: [
+                                                      FilteringTextInputFormatter
+                                                          .allow(RegExp(
+                                                              r'[0-9/]')),
+                                                      TextInputFormatter
+                                                          .withFunction(
+                                                              (oldValue,
+                                                                  newValue) {
+                                                        if (newValue.text
+                                                                    .length ==
+                                                                2 &&
+                                                            oldValue.text
+                                                                    .length ==
+                                                                1) {
+                                                          return TextEditingValue(
+                                                            text:
+                                                                '${newValue.text}/',
+                                                            selection: TextSelection
+                                                                .collapsed(
+                                                                    offset: newValue
+                                                                            .text
+                                                                            .length +
+                                                                        1),
+                                                          );
+                                                        }
+                                                        return newValue;
+                                                      }),
+                                                    ],
                                                   ),
                                                 ),
-                                                const SizedBox(width: 20),
                                                 Expanded(
                                                   child: TextFormField(
+                                                    controller:
+                                                        _cvvController, // Add this line
                                                     decoration:
                                                         const InputDecoration(
                                                       labelText: 'CVV',
@@ -319,7 +414,7 @@ class _PaymentsState extends State<Payments> {
                                                         return 'Please enter valid CVV';
                                                       }
                                                       return null;
-                                                    },
+                                                    }, // Add this line
                                                   ),
                                                 ),
                                               ],
@@ -350,11 +445,127 @@ class _PaymentsState extends State<Payments> {
                                           MaterialStateProperty.all(
                                               Colors.white),
                                     ),
-                                    onPressed: () {
+                                    onPressed: () async {
                                       if (_formKey.currentState!.validate()) {
                                         print('Form is valid');
+
+                                        try {
+                                          final user = _auth.currentUser;
+                                          if (user != null) {
+                                            // Create a DocumentReference pointing to the user's document
+                                            final userRef = _firestore
+                                                .collection('users')
+                                                .doc(user.uid);
+
+                                            await _firestore
+                                                .collection('cards')
+                                                .add({
+                                              'user':
+                                                  userRef, // Save the DocumentReference
+                                              'cvv': _cvvController.text,
+                                              'expireDate':
+                                                  _expireDateController.text,
+                                              'cardNumber':
+                                                  _cardNumberController.text,
+                                            });
+
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              SnackBar(
+                                                content: Center(
+                                                  // Wrap with Center widget
+                                                  child: Text(
+                                                    'Card added successfully!',
+                                                  ),
+                                                ),
+                                                duration: Duration(seconds: 3),
+                                                behavior: SnackBarBehavior
+                                                    .floating, // Make the SnackBar floating
+                                                shape: RoundedRectangleBorder(
+                                                  // Change the shape
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          20.0),
+                                                ),
+                                                backgroundColor: Colors.green[
+                                                    500], // Change the background color
+                                                margin: EdgeInsets.all(
+                                                    30), // Add some margin
+                                              ),
+                                            );
+                                          } else {
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              SnackBar(
+                                                content: Center(
+                                                  // Wrap with Center widget
+                                                  child: Text(
+                                                    'Please sign in to add card!',
+                                                  ),
+                                                ),
+                                                duration: Duration(seconds: 3),
+                                                behavior: SnackBarBehavior
+                                                    .floating, // Make the SnackBar floating
+                                                shape: RoundedRectangleBorder(
+                                                  // Change the shape
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          20.0),
+                                                ),
+                                                backgroundColor: Colors.red[
+                                                    500], // Change the background color
+                                                margin: EdgeInsets.all(
+                                                    30), // Add some margin
+                                              ),
+                                            );
+                                          }
+                                        } catch (e) {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                              content: Center(
+                                                // Wrap with Center widget
+                                                child: Text(
+                                                  'Failed to add card! Please try again.',
+                                                ),
+                                              ),
+                                              duration: Duration(seconds: 3),
+                                              behavior: SnackBarBehavior
+                                                  .floating, // Make the SnackBar floating
+                                              shape: RoundedRectangleBorder(
+                                                // Change the shape
+                                                borderRadius:
+                                                    BorderRadius.circular(20.0),
+                                              ),
+                                              backgroundColor: Colors.red[
+                                                  500], // Change the background color
+                                              margin: EdgeInsets.all(30),
+                                            ),
+                                          );
+                                        }
                                       } else {
-                                        print('Form is invalid');
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            content: Center(
+                                              // Wrap with Center widget
+                                              child: Text(
+                                                'Please enter valid card details!',
+                                              ),
+                                            ),
+                                            duration: Duration(seconds: 3),
+                                            behavior: SnackBarBehavior
+                                                .floating, // Make the SnackBar floating
+                                            shape: RoundedRectangleBorder(
+                                              // Change the shape
+                                              borderRadius:
+                                                  BorderRadius.circular(20.0),
+                                            ),
+                                            backgroundColor: Colors.red[
+                                                500], // Change the background color
+                                            margin: EdgeInsets.all(30),
+                                          ),
+                                        );
                                       }
                                     },
                                     child: Text('Add Card',
