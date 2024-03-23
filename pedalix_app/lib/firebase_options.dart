@@ -63,6 +63,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '535766920813',
     projectId: 'pedalix-6cdf9',
     storageBucket: 'pedalix-6cdf9.appspot.com',
+    androidClientId: '535766920813-9hg2reifegu51n193v776cro3lnvjiel.apps.googleusercontent.com',
     iosClientId: '535766920813-uv8l5qfltdcurft76b4mmtgisd8ci11p.apps.googleusercontent.com',
     iosBundleId: 'com.example.pedalixApp',
   );

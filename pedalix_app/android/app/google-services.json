@@ -14,6 +14,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "535766920813-9hg2reifegu51n193v776cro3lnvjiel.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.pedalix_app",
+            "certificate_hash": "4a2a98fdda841fdccd7399a3b5e6c2077325b6b4"
+          }
+        },
+        {
+          "client_id": "535766920813-qg2bhoek97r5ie92gjq5knvmniullt7d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.pedalix_app",
+            "certificate_hash": "a39009a55c97f8942ab38024a9562d3df30efc95"
+          }
+        },
+        {
           "client_id": "535766920813-m7f6g97qrmhhmb60aluoht1g3ga3437s.apps.googleusercontent.com",
           "client_type": 3
         }
