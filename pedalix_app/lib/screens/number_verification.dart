@@ -5,7 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:pedalix_app/screens/create_account.dart';
 import 'package:pedalix_app/screens/getting_number.dart';
 import 'package:pedalix_app/screens/sign_up.dart';
-import 'package:pedalix_app/screens/user_info_page.dart';
+import 'package:pedalix_app/screens/user_info_edit.dart';
 
 class NumberVerification extends StatefulWidget {
   const NumberVerification({Key? key}) : super(key: key);
@@ -248,7 +248,7 @@ class _MyAppState extends State<NumberVerification> {
                         });
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (_) => UserInfoPage(
+                            builder: (_) => UserInfoEdit(
                               user: user,
                             ),
                           ),

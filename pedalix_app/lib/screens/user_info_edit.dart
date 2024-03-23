@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pedalix_app/main.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserInfoEdit extends StatefulWidget {
-  final User user;
+  final User? user;
 
   const UserInfoEdit({Key? key, required this.user}) : super(key: key);
 
@@ -11,10 +13,27 @@ class UserInfoEdit extends StatefulWidget {
   _UserInfoEditState createState() => _UserInfoEditState();
 }
 
-class User {}
-
 class _UserInfoEditState extends State<UserInfoEdit> {
   bool isObscurePassword = true;
+  String? email;
+  String? phoneNumber;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUserInfo();
+  }
+
+  fetchUserInfo() async {
+    DocumentSnapshot doc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(widget.user?.uid)
+        .get();
+    setState(() {
+      email = doc.get('email');
+      phoneNumber = doc.get('phoneNumber');
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,26 +75,29 @@ class _UserInfoEditState extends State<UserInfoEdit> {
                       Center(
                         child: Stack(
                           children: [
-                            Container(
-                              width: 130,
-                              height: 130,
-                              decoration: BoxDecoration(
-                                border:
-                                    Border.all(width: 4, color: Colors.white),
-                                boxShadow: [
-                                  BoxShadow(
-                                    spreadRadius: 2,
-                                    blurRadius: 10,
-                                    color: Colors.black.withOpacity(0.1),
+                            if (widget.user != null &&
+                                widget.user!.photoURL != null)
+                              Container(
+                                width: 130,
+                                height: 130,
+                                decoration: BoxDecoration(
+                                  border:
+                                      Border.all(width: 4, color: Colors.white),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      spreadRadius: 2,
+                                      blurRadius: 10,
+                                      color: Colors.black.withOpacity(0.1),
+                                    ),
+                                  ],
+                                  shape: BoxShape.circle,
+                                  image: DecorationImage(
+                                    image: NetworkImage(widget.user!
+                                        .photoURL!), // Safe access using null-aware operator
+                                    fit: BoxFit.cover,
                                   ),
-                                ],
-                                shape: BoxShape.circle,
-                                image: const DecorationImage(
-                                  fit: BoxFit.cover,
-                                  image: AssetImage('assets/user.png'),
                                 ),
                               ),
-                            ),
                             Positioned(
                               bottom: 0,
                               right: 0,
@@ -100,9 +122,11 @@ class _UserInfoEditState extends State<UserInfoEdit> {
                       const SizedBox(
                         height: 80,
                       ),
-                      buildTextField("Full Name", "Smith", false),
-                      buildTextField("Email", "smith98@gmail.com", false),
-                      buildTextField("Location", "Colombo", false),
+                      buildTextField(
+                          'Name', widget.user?.displayName ?? 'No Name', false),
+                      buildTextField(
+                          'Phone Number', phoneNumber ?? 'No TP Number', false),
+                      buildTextField('Email', email ?? 'No Email', false),
                       const SizedBox(
                         height: 50,
                       ),
