@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pedalix_app/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -58,7 +59,7 @@ class _PaymentsState extends State<Payments> {
                                 width: 28,
                                 height: 28,
                               ),
-                              const SizedBox(width: 10),
+                              const SizedBox(width: 30),
                               Text(
                                 'Payments',
                                 style: GoogleFonts.montserrat(
@@ -425,82 +426,112 @@ class _PaymentsState extends State<Payments> {
                                     ),
                                   ),
                                   const SizedBox(height: 30),
-                                  ElevatedButton(
-                                    style: ButtonStyle(
-                                      minimumSize: MaterialStateProperty.all(
-                                          const Size(390, 50)),
-                                      padding: MaterialStateProperty.all(
-                                          const EdgeInsets.all(15)),
-                                      shape: MaterialStateProperty.all<
-                                          RoundedRectangleBorder>(
-                                        RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(50),
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 20),
+                                    child: ElevatedButton(
+                                      style: ButtonStyle(
+                                        minimumSize: MaterialStateProperty.all(
+                                            const Size(390, 50)),
+                                        padding: MaterialStateProperty.all(
+                                            const EdgeInsets.all(15)),
+                                        shape: MaterialStateProperty.all<
+                                            RoundedRectangleBorder>(
+                                          RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(50),
+                                          ),
                                         ),
+                                        backgroundColor:
+                                            MaterialStateProperty.all(
+                                                primaryColor),
+                                        foregroundColor:
+                                            MaterialStateProperty.all(
+                                                Colors.white),
                                       ),
-                                      backgroundColor:
-                                          MaterialStateProperty.all(
-                                              primaryColor),
-                                      foregroundColor:
-                                          MaterialStateProperty.all(
-                                              Colors.white),
-                                    ),
-                                    onPressed: () async {
-                                      if (_formKey.currentState!.validate()) {
-                                        print('Form is valid');
+                                      onPressed: () async {
+                                        if (_formKey.currentState!.validate()) {
+                                          print('Form is valid');
 
-                                        try {
-                                          final user = _auth.currentUser;
-                                          if (user != null) {
-                                            // Create a DocumentReference pointing to the user's document
-                                            final userRef = _firestore
-                                                .collection('users')
-                                                .doc(user.uid);
+                                          try {
+                                            final user = _auth.currentUser;
+                                            if (user != null) {
+                                              // Create a DocumentReference pointing to the user's document
+                                              final userRef = _firestore
+                                                  .collection('users')
+                                                  .doc(user.uid);
 
-                                            await _firestore
-                                                .collection('cards')
-                                                .add({
-                                              'user':
-                                                  userRef, // Save the DocumentReference
-                                              'cvv': _cvvController.text,
-                                              'expireDate':
-                                                  _expireDateController.text,
-                                              'cardNumber':
-                                                  _cardNumberController.text,
-                                            });
+                                              await _firestore
+                                                  .collection('cards')
+                                                  .add({
+                                                'user':
+                                                    userRef, // Save the DocumentReference
+                                                'cvv': _cvvController.text,
+                                                'expireDate':
+                                                    _expireDateController.text,
+                                                'cardNumber':
+                                                    _cardNumberController.text,
+                                              });
 
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(
-                                              SnackBar(
-                                                content: Center(
-                                                  // Wrap with Center widget
-                                                  child: Text(
-                                                    'Card added successfully!',
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                SnackBar(
+                                                  content: Center(
+                                                    // Wrap with Center widget
+                                                    child: Text(
+                                                      'Card added successfully!',
+                                                    ),
                                                   ),
+                                                  duration:
+                                                      Duration(seconds: 3),
+                                                  behavior: SnackBarBehavior
+                                                      .floating, // Make the SnackBar floating
+                                                  shape: RoundedRectangleBorder(
+                                                    // Change the shape
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20.0),
+                                                  ),
+                                                  backgroundColor: Colors.green[
+                                                      500], // Change the background color
+                                                  margin: EdgeInsets.all(
+                                                      30), // Add some margin
                                                 ),
-                                                duration: Duration(seconds: 3),
-                                                behavior: SnackBarBehavior
-                                                    .floating, // Make the SnackBar floating
-                                                shape: RoundedRectangleBorder(
-                                                  // Change the shape
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          20.0),
+                                              );
+                                            } else {
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                SnackBar(
+                                                  content: Center(
+                                                    // Wrap with Center widget
+                                                    child: Text(
+                                                      'Please sign in to add card!',
+                                                    ),
+                                                  ),
+                                                  duration:
+                                                      Duration(seconds: 3),
+                                                  behavior: SnackBarBehavior
+                                                      .floating, // Make the SnackBar floating
+                                                  shape: RoundedRectangleBorder(
+                                                    // Change the shape
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20.0),
+                                                  ),
+                                                  backgroundColor: Colors.red[
+                                                      500], // Change the background color
+                                                  margin: EdgeInsets.all(
+                                                      30), // Add some margin
                                                 ),
-                                                backgroundColor: Colors.green[
-                                                    500], // Change the background color
-                                                margin: EdgeInsets.all(
-                                                    30), // Add some margin
-                                              ),
-                                            );
-                                          } else {
+                                              );
+                                            }
+                                          } catch (e) {
                                             ScaffoldMessenger.of(context)
                                                 .showSnackBar(
                                               SnackBar(
                                                 content: Center(
                                                   // Wrap with Center widget
                                                   child: Text(
-                                                    'Please sign in to add card!',
+                                                    'Failed to add card! Please try again.',
                                                   ),
                                                 ),
                                                 duration: Duration(seconds: 3),
@@ -514,19 +545,18 @@ class _PaymentsState extends State<Payments> {
                                                 ),
                                                 backgroundColor: Colors.red[
                                                     500], // Change the background color
-                                                margin: EdgeInsets.all(
-                                                    30), // Add some margin
+                                                margin: EdgeInsets.all(30),
                                               ),
                                             );
                                           }
-                                        } catch (e) {
+                                        } else {
                                           ScaffoldMessenger.of(context)
                                               .showSnackBar(
                                             SnackBar(
                                               content: Center(
                                                 // Wrap with Center widget
                                                 child: Text(
-                                                  'Failed to add card! Please try again.',
+                                                  'Please enter valid card details!',
                                                 ),
                                               ),
                                               duration: Duration(seconds: 3),
@@ -543,38 +573,15 @@ class _PaymentsState extends State<Payments> {
                                             ),
                                           );
                                         }
-                                      } else {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          SnackBar(
-                                            content: Center(
-                                              // Wrap with Center widget
-                                              child: Text(
-                                                'Please enter valid card details!',
-                                              ),
+                                      },
+                                      child: Text('Add Card',
+                                          style: GoogleFonts.roboto(
+                                            textStyle: const TextStyle(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w600,
                                             ),
-                                            duration: Duration(seconds: 3),
-                                            behavior: SnackBarBehavior
-                                                .floating, // Make the SnackBar floating
-                                            shape: RoundedRectangleBorder(
-                                              // Change the shape
-                                              borderRadius:
-                                                  BorderRadius.circular(20.0),
-                                            ),
-                                            backgroundColor: Colors.red[
-                                                500], // Change the background color
-                                            margin: EdgeInsets.all(30),
-                                          ),
-                                        );
-                                      }
-                                    },
-                                    child: Text('Add Card',
-                                        style: GoogleFonts.roboto(
-                                          textStyle: const TextStyle(
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        )),
+                                          )),
+                                    ),
                                   ),
                                 ],
                               ),

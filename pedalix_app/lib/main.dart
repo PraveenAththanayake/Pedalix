@@ -32,7 +32,8 @@ class MyApp extends StatelessWidget {
     return Sizer(
       builder: (context, orientation, deviceType) {
         return MaterialApp(
-          theme: theme, // Assuming 'theme' is defined in 'app_export.dart'
+          theme: theme.copyWith(dividerColor: Colors.transparent),
+          // Assuming 'theme' is defined in 'app_export.dart'
           title: 'pedalix_app',
           debugShowCheckedModeBanner: false,
           home: const onboarding(),
