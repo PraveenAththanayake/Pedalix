@@ -52,7 +52,6 @@ dependencies:
 
   flutter_barcode_scanner: ^2.0.0
 
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -97,7 +96,7 @@ flutter:
     - assets/qr_code.png
     - assets/confirm.png
     - assets/Minus_button.png
-
+    - assets/Charging_Station.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

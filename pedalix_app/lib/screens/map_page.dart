@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:location/location.dart';
 import 'package:pedalix_app/constants.dart';
 import 'package:pedalix_app/utils/map_style.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
@@ -20,10 +20,10 @@ class _MapPageState extends State<MapPage> {
   final Completer<GoogleMapController> _mapController =
       Completer<GoogleMapController>();
 
-  static const LatLng Pitipana = LatLng(6.823998564075345, 80.03050881837878);
-  static const LatLng GreenUni = LatLng(6.820800702603565, 80.04185109605329);
+  static const LatLng Pitipana = LatLng(6.821559595815525, 80.0415551335397);
   LatLng? _currentP = null;
   bool _isLockedToCurrentPosition = true;
+  Set<Marker> _markers = {};
 
   Map<PolylineId, Polyline> polylines = {};
 
@@ -31,10 +31,10 @@ class _MapPageState extends State<MapPage> {
   BitmapDescriptor currentPositionIcon = BitmapDescriptor.defaultMarker;
 
   void setCustomMarkerIcon() {
-    ImageConfiguration config = ImageConfiguration(size: Size(88, 88));
+    ImageConfiguration config = const ImageConfiguration(size: Size(80, 80));
     BitmapDescriptor.fromAssetImage(
       config,
-      "assets/Place_Marker.png",
+      "assets/Charging_Station.png",
     ).then((icon) {
       setState(() {
         destinationIcon = icon;
@@ -50,17 +50,34 @@ class _MapPageState extends State<MapPage> {
     });
   }
 
+  Future<void> fetchStationsAndCreateMarkers() async {
+    final QuerySnapshot snapshot =
+        await FirebaseFirestore.instance.collection('stations').get();
+
+    snapshot.docs.forEach((doc) {
+      final double lat = double.parse(doc['lat'] as String);
+      final double lng = double.parse(doc['lng'] as String);
+      final String name = doc['name'] as String;
+
+      final marker = Marker(
+        markerId: MarkerId(name),
+        position: LatLng(lat, lng),
+        infoWindow: InfoWindow(title: name),
+        icon: destinationIcon,
+      );
+
+      _markers.add(marker);
+    });
+
+    setState(() {});
+  }
+
   @override
   void initState() {
     super.initState();
+    fetchStationsAndCreateMarkers();
     setCustomMarkerIcon();
-    getLocationUpdates().then(
-      (_) => {
-        getPolylinePoints().then((coordinates) => {
-              generatePolyLineFromPoints(coordinates),
-            }),
-      },
-    );
+    getLocationUpdates();
   }
 
   @override
@@ -77,23 +94,9 @@ class _MapPageState extends State<MapPage> {
               }),
               initialCameraPosition: CameraPosition(
                 target: Pitipana,
-                zoom: 13,
+                zoom: 15,
               ),
-              markers: {
-                Marker(
-                  markerId: MarkerId("_currentLocation"),
-                  icon: currentPositionIcon,
-                  position: _currentP!,
-                ),
-                Marker(
-                    markerId: MarkerId("_sourceLocation"),
-                    icon: destinationIcon,
-                    position: Pitipana),
-                Marker(
-                    markerId: MarkerId("_destionationLocation"),
-                    icon: destinationIcon,
-                    position: GreenUni)
-              },
+              markers: _markers,
               polylines: Set<Polyline>.of(polylines.values),
             ),
       floatingActionButton: FloatingActionButton(
@@ -119,7 +122,7 @@ class _MapPageState extends State<MapPage> {
     final GoogleMapController controller = await _mapController.future;
     CameraPosition _newCameraPosition = CameraPosition(
       target: pos,
-      zoom: 13,
+      zoom: 15,
     );
     await controller.animateCamera(
       CameraUpdate.newCameraPosition(_newCameraPosition),
@@ -155,39 +158,18 @@ class _MapPageState extends State<MapPage> {
           if (_isLockedToCurrentPosition) {
             _cameraToPosition(_currentP!);
           }
+
+          // Add a new marker for the current location
+          Marker currentLocationMarker = Marker(
+            markerId: MarkerId('currentLocation'),
+            position: _currentP!,
+            icon:
+                currentPositionIcon, // Make sure to define this BitmapDescriptor
+          );
+
+          _markers.add(currentLocationMarker);
         });
       }
-    });
-  }
-
-  Future<List<LatLng>> getPolylinePoints() async {
-    List<LatLng> polylineCoordinates = [];
-    PolylinePoints polylinePoints = PolylinePoints();
-    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-      "AIzaSyDfd43AVuZ-MC7bx0nrfSaVKYLN2WBN_yI",
-      PointLatLng(Pitipana.latitude, Pitipana.longitude),
-      PointLatLng(GreenUni.latitude, GreenUni.longitude),
-      travelMode: TravelMode.driving,
-    );
-    if (result.points.isNotEmpty) {
-      result.points.forEach((PointLatLng point) {
-        polylineCoordinates.add(LatLng(point.latitude, point.longitude));
-      });
-    } else {
-      print(result.errorMessage);
-    }
-    return polylineCoordinates;
-  }
-
-  void generatePolyLineFromPoints(List<LatLng> polylineCoordinates) async {
-    PolylineId id = PolylineId("poly");
-    Polyline polyline = Polyline(
-        polylineId: id,
-        color: primaryColor,
-        points: polylineCoordinates,
-        width: 4);
-    setState(() {
-      polylines[id] = polyline;
     });
   }
 }
