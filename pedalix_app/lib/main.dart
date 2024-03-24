@@ -10,6 +10,7 @@ import 'package:pedalix_app/screens/sign_up.dart';
 import 'core/app_export.dart';
 import 'package:pedalix_app/screens/qr_scan.dart';
 import 'package:pedalix_app/screens/thankyou.dart';
+import 'package:pedalix_app/screens/profile.dart';
 
 var globalMessengerKey = GlobalKey<ScaffoldMessengerState>();
 
