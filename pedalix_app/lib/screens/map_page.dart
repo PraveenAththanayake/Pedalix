@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:pedalix_app/components/network_utility.dart';
 import 'package:pedalix_app/constants.dart';
 import 'package:pedalix_app/utils/map_style.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -87,34 +89,99 @@ class _MapPageState extends State<MapPage> {
           ? const Center(
               child: Text("Loading..."),
             )
-          : GoogleMap(
-              onMapCreated: ((GoogleMapController controller) {
-                _mapController.complete(controller);
-                controller.setMapStyle(mapUtils.mapStyle);
-              }),
-              initialCameraPosition: CameraPosition(
-                target: Pitipana,
-                zoom: 15,
-              ),
-              markers: _markers,
-              polylines: Set<Polyline>.of(polylines.values),
+          : Stack(
+              children: [
+                GoogleMap(
+                  onMapCreated: ((GoogleMapController controller) {
+                    _mapController.complete(controller);
+                    controller.setMapStyle(mapUtils.mapStyle);
+                  }),
+                  initialCameraPosition: CameraPosition(
+                    target: Pitipana,
+                    zoom: 15,
+                  ),
+                  markers: _markers,
+                  polylines: Set<Polyline>.of(polylines.values),
+                  zoomControlsEnabled: false,
+                ),
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: Container(
+                    height: 160,
+                    padding: EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(30),
+                        topRight: Radius.circular(30),
+                      ),
+                    ),
+                    child: Form(
+                      child: Container(
+                        width: 400,
+                        child: Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: TextField(
+                                onChanged: (value) {
+                                  placeAutoComplete(value);
+                                },
+                                decoration: InputDecoration(
+                                  hintText: 'Search location',
+                                  prefixIcon: Icon(Icons.search),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 10), // Add some space
+                            Expanded(
+                              child: ListView.builder(
+                                itemCount: _predictions.length,
+                                itemBuilder: (context, index) {
+                                  return ListTile(
+                                    title: Text(
+                                        _predictions[index].description ?? ""),
+                                    onTap: () {
+                                      // Handle selection of prediction
+                                      // You may want to clear the search field and update the map accordingly
+                                    },
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  bottom: 180,
+                  right: 10,
+                  child: FloatingActionButton(
+                    onPressed: () {
+                      setState(() {
+                        _isLockedToCurrentPosition =
+                            !_isLockedToCurrentPosition;
+                        if (_isLockedToCurrentPosition && _currentP != null) {
+                          _cameraToPosition(_currentP!);
+                        }
+                      });
+                    },
+                    child: Icon(_currentP == null
+                        ? Icons.location_disabled
+                        : (_isLockedToCurrentPosition
+                            ? Icons.my_location
+                            : Icons.location_searching)),
+                  ),
+                ),
+              ],
             ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          setState(() {
-            _isLockedToCurrentPosition = !_isLockedToCurrentPosition;
-            if (_isLockedToCurrentPosition && _currentP != null) {
-              _cameraToPosition(_currentP!);
-            }
-          });
-        },
-        child: Icon(_currentP == null
-            ? Icons.location_disabled
-            : (_isLockedToCurrentPosition
-                ? Icons.lock
-                : Icons.location_searching)),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 
@@ -172,4 +239,27 @@ class _MapPageState extends State<MapPage> {
       }
     });
   }
+
+  void placeAutoComplete(String query) async {
+    Uri url = Uri.https(
+      'maps.googleapis.com',
+      '/maps/api/place/autocomplete/json',
+      {
+        'input': query,
+        'key': "AIzaSyDfd43AVuZ-MC7bx0nrfSaVKYLN2WBN_yI",
+      },
+    );
+    String? response = await NetworkUtility.fetchUrl(url);
+    if (response != null) {
+      PlaceAutoCompleteResponse result =
+          PlaceAutoCompleteResponse.parseAutoCompleteResult(response);
+      if (result.predictions != null) {
+        setState(() {
+          _predictions = result.predictions!;
+        });
+      }
+    }
+  }
+
+  List<AutocompletePrediction> _predictions = [];
 }
