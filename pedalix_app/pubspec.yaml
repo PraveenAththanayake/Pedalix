@@ -96,7 +96,14 @@ flutter:
     - assets/qr_code.png
     - assets/confirm.png
     - assets/Minus_button.png
+
+    - assets/back_button.png
+    - assets/profile_icon.png
+    - assets/delete_icon.png
+    - assets/logout_icon.png
+
     - assets/Charging_Station.png
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
