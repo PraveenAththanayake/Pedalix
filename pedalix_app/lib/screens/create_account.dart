@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:pedalix_app/core/app_export.dart';
+import 'package:pedalix_app/screens/getting_user_details.dart';
 import 'package:pedalix_app/screens/map_page.dart';
 import 'package:pedalix_app/screens/payments.dart';
 import 'package:pedalix_app/screens/user_info_edit.dart';
@@ -119,7 +120,9 @@ class _CreateAccountState extends State<CreateAccount> {
         // Save the user data in Firestore
         await firestoreInstance.collection('users').doc(user.uid).set({
           'phoneNumber': phoneNumber,
-          'displayName': user.displayName,
+          'firstName': '',
+          'lastName': '',
+          'nicNo': '',
           'email': user.email,
           'photoURL': user.photoURL,
           'timestamp': FieldValue.serverTimestamp(),
@@ -127,7 +130,7 @@ class _CreateAccountState extends State<CreateAccount> {
 
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (_) => UserInfoEdit(user: user),
+            builder: (_) => UserDetails(),
           ),
         );
       }

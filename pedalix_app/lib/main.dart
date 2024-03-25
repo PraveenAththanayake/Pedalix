@@ -23,7 +23,6 @@ void main() async {
     DeviceOrientation.portraitUp,
   ]);
 
-  /// Please update theme as per your need if required.
   ThemeHelper().changeTheme('primary');
 
   runApp(MyApp());
@@ -43,9 +42,7 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           home: onboarding(),
           routes: {
-            // Updated to use 'Onboarding' instead of 'onboarding'
             '/onboarding': (context) => const onboarding(),
-            // Assuming 'AppRoutes.routes' is defined in 'app_export.dart'
           },
         );
       },

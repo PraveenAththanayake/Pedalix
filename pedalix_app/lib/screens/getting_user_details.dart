@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:pedalix_app/screens/profile.dart';
 
 class UserDetails extends StatefulWidget {
   @override
@@ -7,9 +10,11 @@ class UserDetails extends StatefulWidget {
 
 class _UserDetailsState extends State<UserDetails> {
   final _formKey = GlobalKey<FormState>();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
   String firstName = '';
   String lastName = '';
-  DateTime? birthDate; // Make birthDate nullable
   String nicNo = '';
 
   @override
@@ -67,7 +72,7 @@ class _UserDetailsState extends State<UserDetails> {
                   SizedBox(height: 10),
                   TextFormField(
                     decoration: InputDecoration(
-                      labelText: 'NIC No',
+                      labelText: 'NIC / Passport',
                       border: OutlineInputBorder(),
                     ),
                     validator: (value) {
@@ -83,11 +88,29 @@ class _UserDetailsState extends State<UserDetails> {
                   SizedBox(height: 20),
                   ElevatedButton(
                     child: Text('Submit'),
-                    onPressed: () {
+                    onPressed: () async {
                       if (_formKey.currentState!.validate()) {
                         _formKey.currentState!.save();
-                        // Process data.
-                        // For example, you can access the entered values like firstName, lastName, nicNo, etc.
+
+                        // Get the current user's email
+                        User? user = _auth.currentUser;
+                        String? email = user?.email;
+
+                        if (email != null) {
+                          // Update the document with user details
+                          var userDocument =
+                              _firestore.collection('users').doc(user?.uid);
+                          await userDocument.update({
+                            'firstName': firstName,
+                            'lastName': lastName,
+                            'nicNo': nicNo,
+                          });
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => profile(user: user),
+                            ),
+                          );
+                        }
                       }
                     },
                   ),

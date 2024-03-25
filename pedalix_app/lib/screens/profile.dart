@@ -19,7 +19,10 @@ class _profileState extends State<profile> {
   bool isObscurePassword = true;
   String? email;
   String? phoneNumber;
-  bool _isLoading = true; // Added loading indicator state
+  String? firstName;
+  String? lastName;
+  String? nicNo;
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -32,18 +35,26 @@ class _profileState extends State<profile> {
         .collection('users')
         .doc(widget.user?.uid)
         .get();
-    setState(() {
-      email = doc.get('email');
-      phoneNumber = doc.get('phoneNumber');
-      _isLoading = false; // Update loading state once data is fetched
-    });
+    if (doc.exists) {
+      setState(() {
+        email = doc.get('email');
+        phoneNumber = doc.get('phoneNumber');
+        firstName = doc.get('firstName');
+        lastName = doc.get('lastName');
+        nicNo = doc.get('nicNo');
+        _isLoading = false;
+      });
+    } else {
+      // Handle the case where the document does not exist
+      print('Document does not exist');
+    }
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (!_isLoading) {
-      fetchUserInfo(); // Fetch user info only if not already loading
+      fetchUserInfo();
     }
   }
 
@@ -168,7 +179,7 @@ class _profileState extends State<profile> {
                             right: 0,
                             child: Center(
                               child: Text(
-                                widget.user?.displayName ?? 'No Name',
+                                '$firstName $lastName', // Display first name and last name
                                 style: GoogleFonts.montserrat(
                                   color: Colors.black,
                                   fontWeight: FontWeight.bold,
@@ -204,6 +215,27 @@ class _profileState extends State<profile> {
                                 const SizedBox(width: 10),
                                 Text(
                                   email ?? 'No Email',
+                                  style: GoogleFonts.montserrat(
+                                    color: Colors.grey,
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Positioned(
+                            bottom: 40,
+                            left: 15,
+                            child: Row(
+                              children: [
+                                const Icon(
+                                  Icons.email,
+                                  color: Colors.grey,
+                                ),
+                                const SizedBox(width: 10),
+                                Text(
+                                  nicNo ?? 'No NIC',
                                   style: GoogleFonts.montserrat(
                                     color: Colors.grey,
                                     fontWeight: FontWeight.w400,
