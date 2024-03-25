@@ -4,6 +4,8 @@ import 'package:pedalix_app/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pedalix_app/screens/map_page.dart';
+import 'package:pedalix_app/screens/profile.dart';
+import 'package:pedalix_app/utils/transitions.dart';
 
 class UserInfoEdit extends StatefulWidget {
   final User? user;
@@ -150,8 +152,8 @@ class _UserInfoEditState extends State<UserInfoEdit> {
                           ElevatedButton(
                             onPressed: () {
                               Navigator.of(context).push(
-                                MaterialPageRoute(builder: (_) => MapPage()),
-                              );
+                                  fadeTransitionAnimation(
+                                      profile(user: widget.user)));
                             },
                             child: const Text(
                               "Save",
@@ -162,27 +164,6 @@ class _UserInfoEditState extends State<UserInfoEdit> {
                             ),
                             style: ElevatedButton.styleFrom(
                                 backgroundColor: primaryColor,
-                                padding: EdgeInsets.symmetric(horizontal: 50),
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20))),
-                          ),
-                          ElevatedButton(
-                            onPressed: () async {
-                              // Sign out the user and clear all sessions
-                              await FirebaseAuth.instance.signOut();
-                              // Navigate back to the previous screen
-                              Navigator.popUntil(
-                                  context, (route) => route.isFirst);
-                            },
-                            child: const Text(
-                              "Sign Out",
-                              style: TextStyle(
-                                  fontSize: 15,
-                                  letterSpacing: 2,
-                                  color: Colors.white),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.red,
                                 padding: EdgeInsets.symmetric(horizontal: 50),
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(20))),
