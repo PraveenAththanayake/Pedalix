@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:pedalix_app/core/app_export.dart';
+import 'package:pedalix_app/screens/map_page.dart';
 import 'package:pedalix_app/screens/payments.dart';
 import 'package:pedalix_app/screens/user_info_edit.dart';
 import 'package:pedalix_app/widgets/custom_outlined_button.dart';

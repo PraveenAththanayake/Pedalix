@@ -41,20 +41,7 @@ class MyApp extends StatelessWidget {
           theme: theme.copyWith(dividerColor: Colors.transparent),
           title: 'pedalix_app',
           debugShowCheckedModeBanner: false,
-          home: StreamBuilder(
-            stream: FirebaseAuth.instance.authStateChanges(),
-            builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return CircularProgressIndicator(); // Show loading indicator while waiting
-              } else {
-                if (snapshot.hasData && snapshot.data!.email != null) {
-                  return onboarding(); // If user is logged in and has an email
-                } else {
-                  return SignUpScreen(); // If user is not logged in or has no email
-                }
-              }
-            },
-          ),
+          home: onboarding(),
           routes: {
             // Updated to use 'Onboarding' instead of 'onboarding'
             '/onboarding': (context) => const onboarding(),
