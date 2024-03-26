@@ -49,6 +49,8 @@ dependencies:
   flutter_polyline_points: ^2.0.0
   google_maps_flutter: ^2.6.0
   location: ^5.0.3
+  geolocator: ^11.0.0
+  firebase_database: ^10.4.11
   overlay_loader_with_app_icon: ^0.0.3
 
   flutter_barcode_scanner: ^2.0.0

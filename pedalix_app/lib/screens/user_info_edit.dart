@@ -137,7 +137,10 @@ class _UserInfoEditState extends State<UserInfoEdit> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           OutlinedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.of(context)
+                                  .push(fadeTransitionAnimation(MapPage()));
+                            },
                             child: const Text("Cancel",
                                 style: TextStyle(
                                     fontSize: 15,

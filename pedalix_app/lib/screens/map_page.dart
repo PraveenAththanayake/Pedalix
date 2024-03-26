@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -8,6 +9,8 @@ import 'package:pedalix_app/components/network_utility.dart';
 import 'package:pedalix_app/constants.dart';
 import 'package:pedalix_app/utils/map_style.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
@@ -26,6 +29,7 @@ class _MapPageState extends State<MapPage> {
   LatLng? _currentP = null;
   bool _isLockedToCurrentPosition = true;
   Set<Marker> _markers = {};
+  double _distance = 0.0;
 
   Map<PolylineId, Polyline> polylines = {};
 
@@ -128,14 +132,23 @@ class _MapPageState extends State<MapPage> {
                       markerId: MarkerId('selectedLocation'),
                       position: location,
                       icon: selectedPositionIcon,
-                      // infoWindow: InfoWindow(title: 'Selected Location'),
+                      infoWindow: InfoWindow(title: 'Selected Location'),
                     );
 
-                    setState(() {
-                      _markers.add(selectedLocationMarker);
-                    });
+                    _markers.add(selectedLocationMarker);
 
-                    // Generate polyline
+                    _distance = Geolocator.distanceBetween(
+                      _currentP!.latitude,
+                      _currentP!.longitude,
+                      location.latitude,
+                      location.longitude,
+                    );
+                    // Convert the distance to kilometers
+                    _distance = _distance / 1000;
+
+                    // Update the UI
+                    setState(() {});
+
                     List<LatLng> polylineCoordinates =
                         await getPolylinePoints(location);
                     generatePolyLineFromPoints(polylineCoordinates);
@@ -195,6 +208,15 @@ class _MapPageState extends State<MapPage> {
                                   borderSide: BorderSide.none,
                                 ),
                                 suffixIcon: Icon(Icons.search),
+                              ),
+                            ),
+                            SizedBox(height: 10),
+                            Text(
+                              'Distance: ${_distance.toStringAsFixed(2)} km',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: primaryColor,
                               ),
                             ),
                             Expanded(
@@ -276,10 +298,11 @@ class _MapPageState extends State<MapPage> {
     PermissionStatus _permissionGranted;
 
     _serviceEnabled = await _locationController.serviceEnabled();
-    if (_serviceEnabled) {
+    if (!_serviceEnabled) {
       _serviceEnabled = await _locationController.requestService();
-    } else {
-      return;
+      if (!_serviceEnabled) {
+        return;
+      }
     }
 
     _permissionGranted = await _locationController.hasPermission();
@@ -309,6 +332,9 @@ class _MapPageState extends State<MapPage> {
 
           _markers.add(currentLocationMarker);
 
+          // Update the user's location to Firebase Realtime Database
+          updateLocationToFirebase(_currentP!);
+
           // If there is a selected place, update the polyline
           if (_predictions.isNotEmpty) {
             String? placeId = _predictions[0].placeId;
@@ -321,11 +347,53 @@ class _MapPageState extends State<MapPage> {
     });
   }
 
+  void updateLocationToFirebase(LatLng location) async {
+    // Get the current user's email from Firestore
+    String? userEmail;
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      DocumentSnapshot snapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+      if (snapshot.exists) {
+        userEmail = snapshot['email'];
+      }
+    }
+
+    if (userEmail != null) {
+      // Construct the database reference with the user's email
+      DatabaseReference locationRef = FirebaseDatabase.instance
+          .reference()
+          .child('user_locations')
+          .child(userEmail.replaceAll('.', '_'));
+
+      // Update user's location with latitude and longitude
+      locationRef.set({
+        'latitude': location.latitude,
+        'longitude': location.longitude,
+        'timestamp': ServerValue.timestamp,
+      });
+    }
+  }
+
   Future<void> updatePolyline(String placeId) async {
     LatLng selectedPlaceLocation = await getPlaceLocation(placeId);
     List<LatLng> polylineCoordinates =
         await getPolylinePoints(selectedPlaceLocation);
     generatePolyLineFromPoints(polylineCoordinates);
+
+    _distance = Geolocator.distanceBetween(
+      _currentP!.latitude,
+      _currentP!.longitude,
+      selectedPlaceLocation.latitude,
+      selectedPlaceLocation.longitude,
+    );
+    // Convert the distance to kilometers
+    _distance = _distance / 1000;
+
+    // Update the UI
+    setState(() {});
   }
 
   void placeAutoComplete(String query) async {
@@ -367,6 +435,18 @@ class _MapPageState extends State<MapPage> {
           );
 
           _markers.add(selectedLocationMarker);
+
+          _distance = Geolocator.distanceBetween(
+            _currentP!.latitude,
+            _currentP!.longitude,
+            selectedPlaceLocation.latitude,
+            selectedPlaceLocation.longitude,
+          );
+          // Convert the distance to kilometers
+          _distance = _distance / 1000;
+
+          // Update the UI
+          setState(() {});
 
           List<LatLng> polylineCoordinates =
               await getPolylinePoints(selectedPlaceLocation);

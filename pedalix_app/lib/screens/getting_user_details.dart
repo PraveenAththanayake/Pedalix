@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:pedalix_app/screens/map_page.dart';
 import 'package:pedalix_app/screens/profile.dart';
 
 class UserDetails extends StatefulWidget {
@@ -107,7 +108,7 @@ class _UserDetailsState extends State<UserDetails> {
                           });
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (_) => profile(user: user),
+                              builder: (_) => MapPage(),
                             ),
                           );
                         }
