@@ -24,7 +24,7 @@ class _MapPageState extends State<MapPage> {
 
   static const LatLng Pitipana = LatLng(6.821559595815525, 80.0415551335397);
   LatLng? _currentP = null;
-  bool _isLockedToCurrentPosition = false;
+  bool _isLockedToCurrentPosition = true;
   Set<Marker> _markers = {};
 
   Map<PolylineId, Polyline> polylines = {};
@@ -76,7 +76,14 @@ class _MapPageState extends State<MapPage> {
       final marker = Marker(
         markerId: MarkerId(name),
         position: LatLng(lat, lng),
-        infoWindow: InfoWindow(title: name),
+        onTap: () async {
+          // Generate polyline when marker is tapped
+          List<LatLng> polylineCoordinates =
+              await getPolylinePoints(LatLng(lat, lng));
+          generatePolyLineFromPoints(polylineCoordinates);
+        },
+
+        // infoWindow: InfoWindow(title: name),
         icon: destinationIcon,
       );
 
@@ -115,6 +122,24 @@ class _MapPageState extends State<MapPage> {
                   markers: _markers,
                   polylines: Set<Polyline>.of(polylines.values),
                   zoomControlsEnabled: false,
+                  onTap: (LatLng location) async {
+                    // Add a new marker for the selected location
+                    Marker selectedLocationMarker = Marker(
+                      markerId: MarkerId('selectedLocation'),
+                      position: location,
+                      icon: selectedPositionIcon,
+                      // infoWindow: InfoWindow(title: 'Selected Location'),
+                    );
+
+                    setState(() {
+                      _markers.add(selectedLocationMarker);
+                    });
+
+                    // Generate polyline
+                    List<LatLng> polylineCoordinates =
+                        await getPolylinePoints(location);
+                    generatePolyLineFromPoints(polylineCoordinates);
+                  },
                 ),
                 Positioned(
                   bottom: 0,
@@ -358,7 +383,7 @@ class _MapPageState extends State<MapPage> {
       "AIzaSyDfd43AVuZ-MC7bx0nrfSaVKYLN2WBN_yI",
       PointLatLng(_currentP!.latitude, _currentP!.longitude),
       PointLatLng(destination.latitude, destination.longitude),
-      travelMode: TravelMode.bicycling,
+      travelMode: TravelMode.driving,
     );
     if (result.points.isNotEmpty) {
       result.points.forEach((PointLatLng point) {
