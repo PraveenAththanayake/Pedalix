@@ -30,6 +30,7 @@ class _MapPageState extends State<MapPage> {
   bool _isLockedToCurrentPosition = true;
   Set<Marker> _markers = {};
   double _distance = 0.0;
+  late DatabaseReference _userLocationsRef;
 
   Map<PolylineId, Polyline> polylines = {};
 
@@ -103,6 +104,49 @@ class _MapPageState extends State<MapPage> {
     fetchStationsAndCreateMarkers();
     setCustomMarkerIcon();
     getLocationUpdates();
+
+    // Get a reference to the Firebase Realtime Database node where user locations are stored
+    _userLocationsRef =
+        FirebaseDatabase.instance.reference().child('user_locations');
+
+    // Listen for changes in the user locations and update the map accordingly
+    _userLocationsRef.onValue.listen((event) {
+      // Check if the event snapshot contains data
+      if (event.snapshot.value != null) {
+        // Convert the snapshot value to a Map<dynamic, dynamic>
+        Map<dynamic, dynamic>? locations =
+            event.snapshot.value as Map<dynamic, dynamic>?;
+
+        // Clear existing markers representing other users' locations
+        _markers.removeWhere(
+            (marker) => marker.markerId.value.startsWith('user_location'));
+
+        // Add markers for each user's location
+        locations?.forEach((key, value) {
+          // Extract latitude and longitude from the user's location data
+          double latitude = value['latitude'];
+          double longitude = value['longitude'];
+
+          // Create a marker for the user's location
+          Marker userLocationMarker = Marker(
+            markerId: MarkerId(
+                'user_location_$key'), // Use a unique marker ID for each user
+            position: LatLng(latitude, longitude),
+            icon: BitmapDescriptor.defaultMarkerWithHue(
+                BitmapDescriptor.hueBlue), // You can customize the marker icon
+            infoWindow: InfoWindow(
+                title:
+                    'User $key'), // Provide an info window with user information
+          );
+
+          // Add the marker to the set of markers
+          _markers.add(userLocationMarker);
+        });
+
+        // Update the UI to reflect the changes
+        setState(() {});
+      }
+    });
   }
 
   @override
