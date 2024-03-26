@@ -249,18 +249,32 @@ class _MapPageState extends State<MapPage> {
             _cameraToPosition(_currentP!);
           }
 
-          // Add a new marker for the current location
+          // Update the current location marker
           Marker currentLocationMarker = Marker(
             markerId: MarkerId('currentLocation'),
             position: _currentP!,
-            icon:
-                currentPositionIcon, // Make sure to define this BitmapDescriptor
+            icon: currentPositionIcon,
           );
 
           _markers.add(currentLocationMarker);
+
+          // If there is a selected place, update the polyline
+          if (_predictions.isNotEmpty) {
+            String? placeId = _predictions[0].placeId;
+            if (placeId != null) {
+              updatePolyline(placeId);
+            }
+          }
         });
       }
     });
+  }
+
+  Future<void> updatePolyline(String placeId) async {
+    LatLng selectedPlaceLocation = await getPlaceLocation(placeId);
+    List<LatLng> polylineCoordinates =
+        await getPolylinePoints(selectedPlaceLocation);
+    generatePolyLineFromPoints(polylineCoordinates);
   }
 
   void placeAutoComplete(String query) async {
@@ -276,12 +290,50 @@ class _MapPageState extends State<MapPage> {
     if (response != null) {
       PlaceAutoCompleteResponse result =
           PlaceAutoCompleteResponse.parseAutoCompleteResult(response);
-      if (result.predictions != null) {
+      if (result.predictions != null && result.predictions!.isNotEmpty) {
         setState(() {
           _predictions = result.predictions!;
         });
+        String? placeId = _predictions[0].placeId;
+        if (placeId != null) {
+          LatLng selectedPlaceLocation = await getPlaceLocation(placeId);
+          List<LatLng> polylineCoordinates =
+              await getPolylinePoints(selectedPlaceLocation);
+          generatePolyLineFromPoints(polylineCoordinates);
+        }
       }
     }
+  }
+
+  Future<List<LatLng>> getPolylinePoints(LatLng destination) async {
+    List<LatLng> polylineCoordinates = [];
+    PolylinePoints polylinePoints = PolylinePoints();
+    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+      "AIzaSyDfd43AVuZ-MC7bx0nrfSaVKYLN2WBN_yI",
+      PointLatLng(_currentP!.latitude, _currentP!.longitude),
+      PointLatLng(destination.latitude, destination.longitude),
+      travelMode: TravelMode.driving,
+    );
+    if (result.points.isNotEmpty) {
+      result.points.forEach((PointLatLng point) {
+        polylineCoordinates.add(LatLng(point.latitude, point.longitude));
+      });
+    } else {
+      print(result.errorMessage);
+    }
+    return polylineCoordinates;
+  }
+
+  void generatePolyLineFromPoints(List<LatLng> polylineCoordinates) async {
+    PolylineId id = PolylineId("poly");
+    Polyline polyline = Polyline(
+        polylineId: id,
+        color: Colors.black,
+        points: polylineCoordinates,
+        width: 8);
+    setState(() {
+      polylines[id] = polyline;
+    });
   }
 
   List<AutocompletePrediction> _predictions = [];
