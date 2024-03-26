@@ -108,8 +108,7 @@ class _profileState extends State<profile> {
           body: _isLoading
               ? Center(
                   child: OverlayLoaderWithAppIcon(
-                    isLoading:
-                        _isLoading, // Add the required argument for 'isLoading'
+                    isLoading: _isLoading,
                     child: SingleChildScrollView(
                       child: Column(
                         children: <Widget>[
