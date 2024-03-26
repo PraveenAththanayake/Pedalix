@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:pedalix_app/components/navbar.dart';
 
 class QrScannerScreen extends StatefulWidget {
-  const QrScannerScreen({super.key});
+  const QrScannerScreen({Key? key}) : super(key: key);
 
   @override
   State<QrScannerScreen> createState() => _QrScannerScreenState();
@@ -13,8 +14,10 @@ class QrScannerScreen extends StatefulWidget {
 class _QrScannerScreenState extends State<QrScannerScreen> {
   String _scanResult = '';
 
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   //Scan function
-  Future<void> ScanQRCode() async {
+  Future<void> scanQRCode() async {
     String barcodeScanRes;
     try {
       barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
@@ -32,6 +35,28 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        key: _scaffoldKey,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          iconTheme: IconThemeData(color: Color(0xFF127368)),
+          leading: Container(
+            margin: EdgeInsets.only(left: 16, top: 12),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.white,
+            ),
+            child: IconButton(
+              icon: Icon(Icons.menu),
+              onPressed: () {
+                _scaffoldKey.currentState!.openDrawer();
+              },
+            ),
+          ),
+        ),
+        drawer: Drawer(
+          child: navbar(), // Assuming navbar() returns a Drawer widget
+        ),
         backgroundColor: const Color(0xFF127368),
         body: Stack(
           children: [
@@ -79,7 +104,7 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
                     ),
                     const SizedBox(height: 70),
                     GestureDetector(
-                      onTap: ScanQRCode, // Just call the function directly
+                      onTap: scanQRCode,
                       child: Image.asset(
                         'assets/qr_code.png',
                         height: 150,
