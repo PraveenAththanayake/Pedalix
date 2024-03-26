@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class NetworkUtility {
   static Future<String?> fetchUrl(Uri uri,
@@ -81,5 +82,38 @@ class StructuredFormatting {
       mainText: json['main_text'] as String?,
       secondaryText: json['secondary_text'] as String?,
     );
+  }
+}
+
+Future<LatLng> getPlaceLocation(String placeId) async {
+  // Construct the URL for the Places Details API
+  Uri url = Uri.https(
+    'maps.googleapis.com',
+    '/maps/api/place/details/json',
+    {
+      'place_id': placeId,
+      'fields': 'geometry',
+      'key':
+          "AIzaSyDfd43AVuZ-MC7bx0nrfSaVKYLN2WBN_yI", // Replace with your Google Maps API Key
+    },
+  );
+
+  // Send a GET request to the Places Details API
+  var response = await http.get(url);
+
+  if (response.statusCode == 200) {
+    // If the server returns a successful response, parse the JSON
+    var jsonResponse = json.decode(response.body);
+
+    // Extract the latitude and longitude from the response
+    double lat = jsonResponse['result']['geometry']['location']['lat'];
+    double lng = jsonResponse['result']['geometry']['location']['lng'];
+
+    // Return the LatLng object
+    return LatLng(lat, lng);
+  } else {
+    // If the server did not return a 200 OK response,
+    // throw an exception.
+    throw Exception('Failed to load place location');
   }
 }
