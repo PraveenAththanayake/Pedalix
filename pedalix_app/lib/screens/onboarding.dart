@@ -115,8 +115,8 @@ class onboarding extends StatelessWidget {
                 right: 0,
                 child: TextButton(
                   onPressed: () {
-                    Navigator.of(context)
-                        .push(MaterialPageRoute(builder: (_) => MapPage()));
+                    Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => SignUpScreen()));
                     // Handle onPressed function here
                   },
                   style: ButtonStyle(
