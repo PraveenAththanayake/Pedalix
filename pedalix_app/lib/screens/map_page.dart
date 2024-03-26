@@ -24,14 +24,16 @@ class _MapPageState extends State<MapPage> {
 
   static const LatLng Pitipana = LatLng(6.821559595815525, 80.0415551335397);
   LatLng? _currentP = null;
-  bool _isLockedToCurrentPosition = true;
+  bool _isLockedToCurrentPosition = false;
   Set<Marker> _markers = {};
 
   Map<PolylineId, Polyline> polylines = {};
 
   BitmapDescriptor destinationIcon = BitmapDescriptor.defaultMarker;
   BitmapDescriptor currentPositionIcon = BitmapDescriptor.defaultMarker;
-  double _searchContainerHeight = 160; // Initial height of the search container
+  BitmapDescriptor selectedPositionIcon = BitmapDescriptor.defaultMarker;
+
+  double _searchContainerHeight = 160;
   TextEditingController _searchController = TextEditingController();
 
   void setCustomMarkerIcon() {
@@ -50,6 +52,14 @@ class _MapPageState extends State<MapPage> {
     ).then((icon) {
       setState(() {
         currentPositionIcon = icon;
+      });
+    });
+    BitmapDescriptor.fromAssetImage(
+      config,
+      "assets/Place_Marker.png",
+    ).then((icon) {
+      setState(() {
+        selectedPositionIcon = icon;
       });
     });
   }
@@ -169,9 +179,26 @@ class _MapPageState extends State<MapPage> {
                                   return ListTile(
                                     title: Text(
                                         _predictions[index].description ?? ""),
-                                    onTap: () {
+                                    onTap: () async {
                                       // Handle selection of prediction
-                                      // You may want to clear the search field and update the map accordingly
+                                      String selectedPlaceId =
+                                          _predictions[index].placeId!;
+                                      LatLng selectedPlaceLocation =
+                                          await getPlaceLocation(
+                                              selectedPlaceId);
+
+                                      // Update the search field with the selected place
+                                      _searchController.text =
+                                          _predictions[index].description!;
+
+                                      // Update the map with the selected place
+                                      _cameraToPosition(selectedPlaceLocation);
+
+                                      // Clear predictions and reset search container height
+                                      setState(() {
+                                        _predictions.clear();
+                                        _searchContainerHeight = 160;
+                                      });
                                     },
                                   );
                                 },
@@ -249,7 +276,6 @@ class _MapPageState extends State<MapPage> {
             _cameraToPosition(_currentP!);
           }
 
-          // Update the current location marker
           Marker currentLocationMarker = Marker(
             markerId: MarkerId('currentLocation'),
             position: _currentP!,
@@ -278,6 +304,15 @@ class _MapPageState extends State<MapPage> {
   }
 
   void placeAutoComplete(String query) async {
+    // Check if the query is empty
+    if (query.isEmpty) {
+      setState(() {
+        _predictions.clear();
+        polylines.clear();
+      });
+      return;
+    }
+
     Uri url = Uri.https(
       'maps.googleapis.com',
       '/maps/api/place/autocomplete/json',
@@ -297,6 +332,17 @@ class _MapPageState extends State<MapPage> {
         String? placeId = _predictions[0].placeId;
         if (placeId != null) {
           LatLng selectedPlaceLocation = await getPlaceLocation(placeId);
+
+          // Add a new marker for the selected location
+          Marker selectedLocationMarker = Marker(
+            markerId: MarkerId('selectedLocation'),
+            position: selectedPlaceLocation,
+            icon: selectedPositionIcon,
+            infoWindow: InfoWindow(title: 'Selected Location'),
+          );
+
+          _markers.add(selectedLocationMarker);
+
           List<LatLng> polylineCoordinates =
               await getPolylinePoints(selectedPlaceLocation);
           generatePolyLineFromPoints(polylineCoordinates);
@@ -312,7 +358,7 @@ class _MapPageState extends State<MapPage> {
       "AIzaSyDfd43AVuZ-MC7bx0nrfSaVKYLN2WBN_yI",
       PointLatLng(_currentP!.latitude, _currentP!.longitude),
       PointLatLng(destination.latitude, destination.longitude),
-      travelMode: TravelMode.driving,
+      travelMode: TravelMode.bicycling,
     );
     if (result.points.isNotEmpty) {
       result.points.forEach((PointLatLng point) {
@@ -330,7 +376,7 @@ class _MapPageState extends State<MapPage> {
         polylineId: id,
         color: Colors.black,
         points: polylineCoordinates,
-        width: 8);
+        width: 4);
     setState(() {
       polylines[id] = polyline;
     });

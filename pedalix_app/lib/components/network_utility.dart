@@ -93,8 +93,7 @@ Future<LatLng> getPlaceLocation(String placeId) async {
     {
       'place_id': placeId,
       'fields': 'geometry',
-      'key':
-          "AIzaSyDfd43AVuZ-MC7bx0nrfSaVKYLN2WBN_yI", // Replace with your Google Maps API Key
+      'key': "AIzaSyDfd43AVuZ-MC7bx0nrfSaVKYLN2WBN_yI",
     },
   );
 
@@ -102,18 +101,13 @@ Future<LatLng> getPlaceLocation(String placeId) async {
   var response = await http.get(url);
 
   if (response.statusCode == 200) {
-    // If the server returns a successful response, parse the JSON
     var jsonResponse = json.decode(response.body);
 
-    // Extract the latitude and longitude from the response
     double lat = jsonResponse['result']['geometry']['location']['lat'];
     double lng = jsonResponse['result']['geometry']['location']['lng'];
 
-    // Return the LatLng object
     return LatLng(lat, lng);
   } else {
-    // If the server did not return a 200 OK response,
-    // throw an exception.
     throw Exception('Failed to load place location');
   }
 }
