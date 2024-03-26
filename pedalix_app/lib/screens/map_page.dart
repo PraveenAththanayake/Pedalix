@@ -31,6 +31,8 @@ class _MapPageState extends State<MapPage> {
 
   BitmapDescriptor destinationIcon = BitmapDescriptor.defaultMarker;
   BitmapDescriptor currentPositionIcon = BitmapDescriptor.defaultMarker;
+  double _searchContainerHeight = 160; // Initial height of the search container
+  TextEditingController _searchController = TextEditingController();
 
   void setCustomMarkerIcon() {
     ImageConfiguration config = const ImageConfiguration(size: Size(80, 80));
@@ -108,26 +110,46 @@ class _MapPageState extends State<MapPage> {
                   bottom: 0,
                   left: 0,
                   right: 0,
-                  child: Container(
-                    height: 160,
-                    padding: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(30),
-                        topRight: Radius.circular(30),
+                  child: GestureDetector(
+                    onTap: () {
+                      if (_searchController.text.isEmpty) {
+                        setState(() {
+                          _searchContainerHeight = 160; // Initial height
+                        });
+                      }
+                    },
+                    child: AnimatedContainer(
+                      duration: Duration(milliseconds: 300),
+                      height: _searchContainerHeight,
+                      padding: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(30),
+                          topRight: Radius.circular(30),
+                        ),
                       ),
-                    ),
-                    child: Form(
-                      child: Container(
-                        width: 400,
+                      child: Form(
                         child: Column(
                           children: [
                             TextFormField(
-                              onChanged: (value) => placeAutoComplete(value),
-                              readOnly: true,
+                              controller: _searchController,
+                              onChanged: (value) {
+                                if (value.isEmpty) {
+                                  setState(() {
+                                    _searchContainerHeight =
+                                        160; // Initial height
+                                  });
+                                } else {
+                                  setState(() {
+                                    _searchContainerHeight = 300;
+                                  });
+                                  placeAutoComplete(value);
+                                }
+                              },
+                              readOnly: false,
                               onTap: () {
-                                placeAutoComplete('Pitipana');
+                                placeAutoComplete('');
                               },
                               decoration: InputDecoration(
                                 hintText: 'Search',
@@ -140,7 +162,6 @@ class _MapPageState extends State<MapPage> {
                                 suffixIcon: Icon(Icons.search),
                               ),
                             ),
-                            SizedBox(height: 10), // Add some space
                             Expanded(
                               child: ListView.builder(
                                 itemCount: _predictions.length,
@@ -163,7 +184,7 @@ class _MapPageState extends State<MapPage> {
                   ),
                 ),
                 Positioned(
-                  bottom: 180,
+                  top: 250,
                   right: 10,
                   child: FloatingActionButton(
                     onPressed: () {
