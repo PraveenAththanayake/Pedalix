@@ -102,8 +102,28 @@ class _MapPageState extends State<MapPage> {
               print('Distance to station: $_distance km');
             }
           },
-
-          // infoWindow: InfoWindow(title: name),
+          infoWindow: InfoWindow(
+            title: name,
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text(name),
+                    content: Text('Distance to station: $_distance km'),
+                    actions: <Widget>[
+                      TextButton(
+                        child: Text('OK'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+          ),
           icon: destinationIcon,
         );
 
