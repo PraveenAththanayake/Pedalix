@@ -2,14 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class Checkout extends StatefulWidget {
-  const Checkout({Key? key}) : super(key: key);
+  final String scanResult;
+  const Checkout({Key? key, required this.scanResult}) : super(key: key);
 
   @override
-  State<Checkout> createState() => _MyAppState();
+  State<Checkout> createState() => _MyAppState(scanResult: scanResult);
 }
 
 class _MyAppState extends State<Checkout> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final String scanResult;
+
+  _MyAppState({required this.scanResult});
 
   final Color primaryColor = const Color(0xFF127368); // Define primary color
 
@@ -63,7 +67,7 @@ class _MyAppState extends State<Checkout> {
                       ),
                       const SizedBox(height: 5),
                       Center(
-                        child: Text('LKR 50.00',
+                        child: Text(scanResult,
                             style: GoogleFonts.montserrat(
                               textStyle: const TextStyle(
                                 fontSize: 40,

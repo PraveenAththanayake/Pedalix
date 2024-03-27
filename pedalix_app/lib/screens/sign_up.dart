@@ -1,3 +1,4 @@
+import 'package:pedalix_app/screens/getting_number.dart';
 import 'package:pedalix_app/screens/user_info_edit.dart';
 import 'package:pedalix_app/widgets/custom_phone_number.dart';
 import 'package:country_pickers/country.dart';
@@ -152,12 +153,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
       if (user != null) {
         // Save the user data in Firestore
         await firestoreInstance.collection('users').doc(user.uid).set({
-          'displayName': user.displayName,
+          'firstName': "",
+          'lastName': "",
+          'nicNO': "",
           'email': user.email,
           'photoURL': user.photoURL,
-          'phoneNumber': user.phoneNumber,
+          'phoneNumber': "",
           'timestamp': FieldValue.serverTimestamp(),
         });
+
+        if (user.phoneNumber == null || user.phoneNumber!.isEmpty) {
+          // Navigate to number page
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => GettingNumber()),
+          );
+        }
       }
     } catch (error) {
       print(error);

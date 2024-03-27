@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pedalix_app/components/navbar.dart';
+import 'package:pedalix_app/screens/checkout.dart';
 
 class QrScannerScreen extends StatefulWidget {
   const QrScannerScreen({Key? key}) : super(key: key);
@@ -104,7 +105,21 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
                     ),
                     const SizedBox(height: 70),
                     GestureDetector(
-                      onTap: scanQRCode,
+                      onTap: () async {
+                        await scanQRCode(); // Wait for QR code scanning to complete
+                        if (_scanResult.isNotEmpty) {
+                          // Check if a QR code was scanned successfully
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  Checkout(scanResult: _scanResult),
+                            ),
+                          );
+                        } else {
+                          // Handle case where QR code scanning failed or returned empty result
+                        }
+                      },
                       child: Image.asset(
                         'assets/qr_code.png',
                         height: 150,
