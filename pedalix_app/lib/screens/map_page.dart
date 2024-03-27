@@ -70,32 +70,48 @@ class _MapPageState extends State<MapPage> {
   }
 
   Future<void> fetchStationsAndCreateMarkers() async {
-    final QuerySnapshot snapshot =
-        await FirebaseFirestore.instance.collection('stations').get();
+    try {
+      final QuerySnapshot snapshot =
+          await FirebaseFirestore.instance.collection('stations').get();
 
-    snapshot.docs.forEach((doc) {
-      final double lat = double.parse(doc['lat'] as String);
-      final double lng = double.parse(doc['lng'] as String);
-      final String name = doc['name'] as String;
+      snapshot.docs.forEach((doc) {
+        final double lat = double.parse(doc['lat'] as String);
+        final double lng = double.parse(doc['lng'] as String);
+        final String name = doc['name'] as String;
 
-      final marker = Marker(
-        markerId: MarkerId(name),
-        position: LatLng(lat, lng),
-        onTap: () async {
-          // Generate polyline when marker is tapped
-          List<LatLng> polylineCoordinates =
-              await getPolylinePoints(LatLng(lat, lng));
-          generatePolyLineFromPoints(polylineCoordinates);
-        },
+        final marker = Marker(
+          markerId: MarkerId(name),
+          position: LatLng(lat, lng),
+          onTap: () async {
+            // Generate polyline when marker is tapped
+            List<LatLng> polylineCoordinates =
+                await getPolylinePoints(LatLng(lat, lng));
+            generatePolyLineFromPoints(polylineCoordinates);
 
-        // infoWindow: InfoWindow(title: name),
-        icon: destinationIcon,
-      );
+            // Calculate the distance between current position and station
+            if (_currentP != null) {
+              double distanceInMeters = Geolocator.distanceBetween(
+                _currentP!.latitude,
+                _currentP!.longitude,
+                lat,
+                lng,
+              );
+              _distance = distanceInMeters / 1000; // convert to kilometers
+              print('Distance to station: $_distance km');
+            }
+          },
 
-      _markers.add(marker);
-    });
+          // infoWindow: InfoWindow(title: name),
+          icon: destinationIcon,
+        );
 
-    setState(() {});
+        _markers.add(marker);
+      });
+
+      setState(() {});
+    } catch (e) {
+      print('Error fetching stations: $e');
+    }
   }
 
   @override
@@ -154,7 +170,7 @@ class _MapPageState extends State<MapPage> {
     return Scaffold(
       body: _currentP == null
           ? const Center(
-              child: Text("Loading..."),
+              child: CircularProgressIndicator(),
             )
           : Stack(
               children: [
