@@ -11,6 +11,7 @@ import 'package:pedalix_app/utils/map_style.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:pedalix_app/components/navbar.dart';
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
@@ -20,6 +21,7 @@ class MapPage extends StatefulWidget {
 }
 
 class _MapPageState extends State<MapPage> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   Location _locationController = new Location();
 
   final Completer<GoogleMapController> _mapController =
@@ -152,6 +154,43 @@ class _MapPageState extends State<MapPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
+      key: _scaffoldKey, // Add this line
+      appBar: AppBar(
+        toolbarHeight: 100,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        iconTheme: IconThemeData(color: Color(0xFF127368)),
+        leading: Container(
+          margin: EdgeInsets.only(
+            left: 16,
+            top: 0,
+            bottom: 30,
+          ),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.4), // Color of the shadow
+                spreadRadius: 4, // Spread radius
+                blurRadius: 10, // Blur radius
+                offset: Offset(0,
+                    3), // Offset in x and y axes from the center of the container
+              ),
+            ],
+          ),
+          child: IconButton(
+            icon: Icon(Icons.menu),
+            onPressed: () {
+              _scaffoldKey.currentState!.openDrawer();
+            },
+          ),
+        ),
+      ),
+      drawer: Drawer(
+        child: navbar(), // Assuming navbar() returns a Drawer widget
+      ),
       body: _currentP == null
           ? const Center(
               child: Text("Loading..."),
@@ -254,7 +293,7 @@ class _MapPageState extends State<MapPage> {
                                 suffixIcon: Icon(Icons.search),
                               ),
                             ),
-                            SizedBox(height: 10),
+                            SizedBox(height: 20),
                             Text(
                               'Distance: ${_distance.toStringAsFixed(2)} km',
                               style: TextStyle(
