@@ -1,7 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pedalix_app/main.dart';
+import 'package:pedalix_app/screens/map_page.dart';
 
 class Contact_US extends StatefulWidget {
   Contact_US({Key? key}) : super(key: key);
@@ -12,6 +15,7 @@ class Contact_US extends StatefulWidget {
 
 class _Contact_USState extends State<Contact_US> {
   List<bool> checkboxValues = List.filled(5, false);
+  final TextEditingController _messageController = TextEditingController();
   bool _isChecked = false;
 
   @override
@@ -51,6 +55,7 @@ class _Contact_USState extends State<Contact_US> {
             ),
             TextFormField(
               maxLines: 5,
+              controller: _messageController,
               decoration: InputDecoration(
                 hintText: 'Enter your message here',
                 border: OutlineInputBorder(),
@@ -80,8 +85,26 @@ class _Contact_USState extends State<Contact_US> {
         child: Padding(
           padding: EdgeInsets.all(16.0),
           child: ElevatedButton(
-              onPressed: () {
-                // Add your submit functionality here
+              onPressed: () async {
+                final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+                final FirebaseAuth _auth = FirebaseAuth.instance;
+
+                User? user = _auth.currentUser;
+                String? email = user?.email;
+
+                if (email != null) {
+                  // Update the document with user details
+                  var userDocument =
+                      _firestore.collection('notifications').doc(email);
+                  await userDocument.set({
+                    'email': email,
+                    'message': _messageController.text,
+                    'timestamp': FieldValue.serverTimestamp(),
+                  });
+                }
+
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (_) => const MapPage()));
               },
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all<Color>(

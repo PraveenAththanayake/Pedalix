@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:pedalix_app/screens/Contact_Us.dart';
 import 'package:pedalix_app/screens/about.dart';
 import 'package:pedalix_app/screens/help.dart';
 import 'package:pedalix_app/screens/mytrip.dart';
@@ -56,6 +57,14 @@ class navbar extends StatelessWidget {
               onTap: () {
                 Navigator.of(context)
                     .push(MaterialPageRoute(builder: (_) => const mytrip()));
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.help),
+              title: const Text('Contact Us'),
+              onTap: () {
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (_) => Contact_US()));
               },
             ),
             ListTile(
