@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:pedalix_app/screens/Contact_Us.dart';
 import 'package:pedalix_app/screens/about.dart';
 import 'package:pedalix_app/screens/getting_number.dart';
 import 'package:pedalix_app/screens/getting_user_details.dart';
@@ -123,9 +124,8 @@ class onboarding extends StatelessWidget {
                 child: TextButton(
                   onPressed: () {
 
-                    Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => QrScannerScreen()));
-
+                    Navigator.of(context)
+                        .push(MaterialPageRoute(builder: (_) => Contact_US()));
 
 
                     // Handle onPressed function here
