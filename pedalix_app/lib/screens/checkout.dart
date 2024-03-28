@@ -1,5 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_paypal_payment/flutter_paypal_payment.dart';
+import 'package:pedalix_app/screens/thankyou.dart';
 
 class Checkout extends StatefulWidget {
   final String scanResult;
@@ -67,7 +71,7 @@ class _MyAppState extends State<Checkout> {
                       ),
                       const SizedBox(height: 5),
                       Center(
-                        child: Text(scanResult,
+                        child: Text('Rs. $scanResult.00',
                             style: GoogleFonts.montserrat(
                               textStyle: const TextStyle(
                                 fontSize: 40,
@@ -243,11 +247,65 @@ class _MyAppState extends State<Checkout> {
               foregroundColor: MaterialStateProperty.all(Colors.white),
             ),
             onPressed: () {
-              if (_formKey.currentState!.validate()) {
-                print('Form is valid');
-              } else {
-                print('Form is invalid');
-              }
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => PaypalCheckoutView(
+                    sandboxMode: true,
+                    clientId:
+                        "AW9VEI3zFdFhhKrdB9uigRmmwNnvafYpXixa5D6U3aveMo5JZEbcqVf7YFhR__7n6xbCxXiKPQjHMr5r",
+                    secretKey:
+                        "EPEBUyS8R__NI_sQY1cMGaDxsJa-aA6zBnZYqU-_PrTthTPuiO0Fq3eMsEshR-16S8gSRoaGq2_3cQed",
+                    transactions: [
+                      {
+                        "amount": {
+                          "total": scanResult,
+                          "currency": "USD",
+                          "details": {
+                            "subtotal": scanResult,
+                            "shipping": '0',
+                            "shipping_discount": 0
+                          }
+                        },
+                      }
+                    ],
+                    note: "PAYMENT_NOTE",
+                    onSuccess: (Map params) async {
+                      final FirebaseFirestore _firestore =
+                          FirebaseFirestore.instance;
+                      final FirebaseAuth _auth = FirebaseAuth.instance;
+
+                      User? user = _auth.currentUser;
+                      String? email = user?.email;
+
+                      if (email != null) {
+                        // Update the document with user details
+                        var userDocument = _firestore
+                            .collection('payments')
+                            .doc(
+                                'INV-${DateTime.now().millisecondsSinceEpoch}');
+                        await userDocument.set({
+                          'invoiceNo':
+                              'INV-${DateTime.now().millisecondsSinceEpoch}',
+                          'email': email,
+                          'amount': 'Rs. $scanResult.00',
+                          'timestamp': FieldValue.serverTimestamp(),
+                        });
+                      }
+
+                      Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const ThankYou()));
+                    },
+                    onError: (error) {
+                      print("onError: $error");
+                      Navigator.pop(context);
+                    },
+                    onCancel: () {
+                      print('cancelled:');
+                    },
+                  ),
+                ),
+              );
             },
             child: Text('Confirm Payment',
                 style: GoogleFonts.roboto(

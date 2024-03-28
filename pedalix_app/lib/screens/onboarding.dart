@@ -123,8 +123,10 @@ class onboarding extends StatelessWidget {
                 right: 0,
                 child: TextButton(
                   onPressed: () {
+
                     Navigator.of(context)
                         .push(MaterialPageRoute(builder: (_) => Contact_US()));
+
 
                     // Handle onPressed function here
                   },
