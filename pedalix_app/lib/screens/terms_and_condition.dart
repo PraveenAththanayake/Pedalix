@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:pedalix_app/screens/onboarding.dart';
+import 'package:pedalix_app/screens/sign_up.dart';
 
 class TermsAndCondition extends StatelessWidget {
   final Color primaryColor = const Color(0xFF127368);
@@ -464,11 +466,10 @@ class AgreementScreen extends StatelessWidget {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
-                      // Handle acceptance
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(builder: (context) => MapPage()),
-                      // );
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => SignUpScreen()),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: primaryColor, // background color
@@ -487,8 +488,10 @@ class AgreementScreen extends StatelessWidget {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
-                      // Handle decline
-                      // You can exit the app or show a message
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => onboarding()),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,

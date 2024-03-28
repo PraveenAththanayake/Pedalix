@@ -1,15 +1,21 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pedalix_app/screens/about.dart';
 import 'package:pedalix_app/screens/help.dart';
 import 'package:pedalix_app/screens/mytrip.dart';
 import 'package:pedalix_app/screens/payments.dart';
+import 'package:pedalix_app/screens/profile.dart';
 import 'package:pedalix_app/screens/promotions.dart';
 
 class navbar extends StatelessWidget {
-  const navbar({super.key});
+  final User? user; // Define the user object in the navbar
+  const navbar({Key? key, required this.user}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+    final FirebaseAuth _auth = FirebaseAuth.instance;
     return SafeArea(
       child: Drawer(
         child: ListView(
@@ -66,6 +72,18 @@ class navbar extends StatelessWidget {
               onTap: () {
                 Navigator.of(context)
                     .push(MaterialPageRoute(builder: (_) => const about()));
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.info),
+              title: const Text('Profile'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => profile(
+                          user: user)), // Pass user to the profile screen
+                );
               },
             ),
           ],

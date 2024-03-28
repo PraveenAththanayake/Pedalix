@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
@@ -55,9 +56,7 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
             ),
           ),
         ),
-        drawer: Drawer(
-          child: navbar(), // Assuming navbar() returns a Drawer widget
-        ),
+        drawer: navbar(user: FirebaseAuth.instance.currentUser),
         backgroundColor: const Color(0xFF127368),
         body: Stack(
           children: [
