@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_paypal_payment/flutter_paypal_payment.dart';
@@ -269,6 +271,28 @@ class _MyAppState extends State<Checkout> {
                     ],
                     note: "PAYMENT_NOTE",
                     onSuccess: (Map params) async {
+                      final FirebaseFirestore _firestore =
+                          FirebaseFirestore.instance;
+                      final FirebaseAuth _auth = FirebaseAuth.instance;
+
+                      User? user = _auth.currentUser;
+                      String? email = user?.email;
+
+                      if (email != null) {
+                        // Update the document with user details
+                        var userDocument = _firestore
+                            .collection('payments')
+                            .doc(
+                                'INV-${DateTime.now().millisecondsSinceEpoch}');
+                        await userDocument.set({
+                          'invoiceNo':
+                              'INV-${DateTime.now().millisecondsSinceEpoch}',
+                          'email': email,
+                          'amount': 'Rs. $scanResult.00',
+                          'timestamp': FieldValue.serverTimestamp(),
+                        });
+                      }
+
                       Navigator.of(context).push(
                           MaterialPageRoute(builder: (_) => const ThankYou()));
                     },
