@@ -7,21 +7,23 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:pedalix_app/components/network_utility.dart';
 import 'package:pedalix_app/constants.dart';
+import 'package:pedalix_app/screens/onboarding.dart';
 import 'package:pedalix_app/screens/qr_scan.dart';
+import 'package:pedalix_app/screens/thankyou.dart';
 import 'package:pedalix_app/utils/map_style.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:pedalix_app/components/navbar.dart';
 
-class MapPage extends StatefulWidget {
-  const MapPage({super.key});
+class MapEnd extends StatefulWidget {
+  const MapEnd({super.key});
 
   @override
-  State<MapPage> createState() => _MapPageState();
+  State<MapEnd> createState() => _MapEndState();
 }
 
-class _MapPageState extends State<MapPage> {
+class _MapEndState extends State<MapEnd> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   Location _locationController = new Location();
 
@@ -406,11 +408,10 @@ class _MapPageState extends State<MapPage> {
                         // Navigate to the QR page
                         Navigator.push(
                           context,
-                          MaterialPageRoute(
-                              builder: (context) => QrScannerScreen()),
+                          MaterialPageRoute(builder: (context) => onboarding()),
                         );
                       },
-                      child: Icon(Icons.qr_code),
+                      child: Icon(Icons.stop),
                     ),
                   ),
                 Positioned(
