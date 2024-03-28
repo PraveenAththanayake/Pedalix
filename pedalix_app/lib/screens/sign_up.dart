@@ -1,5 +1,5 @@
 import 'package:pedalix_app/screens/getting_number.dart';
-import 'package:pedalix_app/screens/user_info_edit.dart';
+import 'package:pedalix_app/screens/map_page.dart';
 import 'package:pedalix_app/widgets/custom_phone_number.dart';
 import 'package:country_pickers/country.dart';
 import 'package:country_pickers/country_pickers.dart';
@@ -45,12 +45,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _user != null ? _userInfo() : _signInScreen(),
+      body: _user != null ? map() : _signInScreen(),
     );
   }
 
-  Widget _userInfo() {
-    return UserInfoEdit(user: _user);
+  Widget map() {
+    return MapPage();
   }
 
   Widget _signInScreen() {
