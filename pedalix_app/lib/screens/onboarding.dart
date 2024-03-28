@@ -1,18 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pedalix_app/screens/Contact_Us.dart';
-import 'package:pedalix_app/screens/about.dart';
-import 'package:pedalix_app/screens/getting_number.dart';
-import 'package:pedalix_app/screens/getting_user_details.dart';
-import 'package:pedalix_app/screens/payments.dart';
-
-import 'package:pedalix_app/screens/promotions.dart';
-
-import 'package:pedalix_app/screens/qr_scan.dart';
-
-import 'package:pedalix_app/screens/sign_up.dart';
-import 'package:pedalix_app/screens/user_info_edit.dart';
-import 'package:pedalix_app/screens/map_page.dart';
+import 'package:pedalix_app/screens/terms_and_condition.dart';
 
 class onboarding extends StatelessWidget {
   const onboarding({Key? key}) : super(key: key);
@@ -123,10 +111,8 @@ class onboarding extends StatelessWidget {
                 right: 0,
                 child: TextButton(
                   onPressed: () {
-
-                    Navigator.of(context)
-                        .push(MaterialPageRoute(builder: (_) => Contact_US()));
-
+                    Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => TermsAndCondition()));
 
                     // Handle onPressed function here
                   },

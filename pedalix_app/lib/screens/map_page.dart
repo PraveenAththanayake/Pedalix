@@ -241,9 +241,7 @@ class _MapPageState extends State<MapPage> {
           ),
         ),
       ),
-      drawer: Drawer(
-        child: navbar(), // Assuming navbar() returns a Drawer widget
-      ),
+      drawer: navbar(user: FirebaseAuth.instance.currentUser),
       body: _currentP == null
           ? const Center(
               child: CircularProgressIndicator(),
