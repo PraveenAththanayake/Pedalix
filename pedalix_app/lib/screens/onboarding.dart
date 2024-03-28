@@ -122,8 +122,8 @@ class onboarding extends StatelessWidget {
                 right: 0,
                 child: TextButton(
                   onPressed: () {
-                    Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => QrScannerScreen()));
+                    Navigator.of(context)
+                        .push(MaterialPageRoute(builder: (_) => MapPage()));
 
                     // Handle onPressed function here
                   },

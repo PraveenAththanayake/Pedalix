@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:pedalix_app/screens/map_end.dart';
 
 class ThankYou extends StatefulWidget {
   const ThankYou({Key? key}) : super(key: key);
@@ -108,11 +109,8 @@ class _MyAppState extends State<ThankYou> {
                       foregroundColor: MaterialStateProperty.all(Colors.white),
                     ),
                     onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        print('Form is valid');
-                      } else {
-                        print('Form is invalid');
-                      }
+                      Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const MapEnd()));
                     },
                     child: Text(
                       'Ready to go!',
